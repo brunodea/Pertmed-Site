@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+
+<title>{{object.name}}'s Profile</title>
+
+<script type="text/javascript" src="/static/jquery.js"></script>
+
+<script type="text/javascript">
+
+$("document").ready(function(){
+						   
+    $(".accordion .form_item:first").addClass("active");
+	$(".accordion .form_field:not(:first)").hide();
+
+	$(".accordion .form_item").click(function(){
+	  $(this).next(".form_field").slideToggle("slow")
+	  .siblings(".form_field:visible").slideUp("slow");
+	  $(this).toggleClass("active");
+	  $(this).siblings(".form_item").removeClass("active");
+
+	});
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+{% if forms.errors %}
+    <p style="color: red;">
+        Please correct the error{{ forms.errors|pluralize }} below.
+    </p>
+{% endif %}
+{% if changed %}
+<!-- ao invés disso podia ser tipo uma janela ou sei lá. -->
+    <p style="color: blue;">
+        Profile changed with Success!
+    </p>
+{% endif %}
+
+<form action="." method="POST">
+<!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
+{% csrf_token %}
+<table>
+<!-- Renderiza o campo "Name" do formulário. -->
+<tr><td>{{ forms.name.label }}:</td><td> {{ forms.name }} </td></tr>
+
+</table>
+
+<!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
+<div class="accordion">
+    {% for item, fields in info_forms %}
+        <div class="form_item">
+        {% for label, info in item %}
+            <strong> {{ label }}:{{ info }} </strong>
+        {% endfor %}
+        </div>
+
+        <div class="form_field">
+        <table>
+        {% for label, info in fields %}
+            <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
+        {% endfor %}
+        </table>
+        </div>
+    {% endfor %}
+</div>
+
+<input type="submit" value="Change" />
+</form>
+
+</body>
+</html>
+

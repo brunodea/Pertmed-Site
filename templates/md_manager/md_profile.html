@@ -1,0 +1,48 @@
+<html> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+
+<title>{{ object.name }}</title>
+
+<script type="text/javascript" src="/static/jquery.js"></script>
+
+<script type="text/javascript">
+
+$("document").ready(function(){
+						   
+	$(".pane .delete").click(function(){
+		$(this).parents(".pane").animate({ opacity: 'hide' }, "slow");
+	});
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div class="pane">
+    <h1>{{ object.name }}</h1>
+    <dl>
+    {% for item in object.item_set.all %}
+        <dt><strong>{{ item.name }}</strong>
+        {% for field in item.field_set.all %}
+            <dd><ul><li> {{ field.name }} </li></ul></dd>
+        {% endfor %}
+    {% endfor %}
+    </dl>
+ 
+    <img src="/static/images/btn-delete.gif" alt="delete" class="delete" />
+
+    <form action="change/" method="GET">
+        <input type="submit" value="Change" />
+    </form>
+</div>
+
+
+
+</body>
+</html>
+
