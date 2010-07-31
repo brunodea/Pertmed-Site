@@ -1,0 +1,101 @@
+body
+{
+    width: 800px;
+    margin: auto;
+    padding: 10px;
+    background: #e7fcff;
+    font-family: Helvetica, Verdana, sans-serif;
+}
+
+#header
+{
+    background-image: url("../images/header.jpeg");
+    min-height: 120px;
+    width: 99.9%;
+    border-top: solid 1px #204e53;
+}
+
+#header h1
+{
+    margin: auto;
+    color: #0e7480;
+}
+
+#header h5
+{
+    margin: auto;
+    color: #f4f8f9;
+    margin-right: 10px;
+}
+
+#header form
+{
+    color: #fff;
+    margin: 10px;
+}
+
+#header h5 a:link { color: #ccc; text-decoration:none; }
+#header h5 a:visited { color: #ccc; text-decoration:none; }
+#header h5 a:hover { color: #fff; text-decoration:none; }
+#header h5 a:active { color: #ccc; text-decoration:none; }
+
+.site_body
+{
+    background: #bbc3c4;   
+    width: 100%;
+    float: left;
+    min-height: 100px;
+}
+
+#leftMenu
+{  
+    display: inline;
+    float:left;
+    width:25%;
+    min-height: 200px;
+}
+
+
+#leftMenu img
+{
+    position: relative;
+    margin: auto;
+}
+
+#leftMenu .element
+{
+    width: 100%;
+    background: none;
+    border-bottom: solid 1px #696d6d;
+    padding: 5px;
+}
+
+
+#leftMenu .element a:link { color: #42575a; text-decoration:none; }
+#leftMenu .element a:visited { color: #42575a; text-decoration:none; }
+#leftMenu .element a:hover { color: #f4f8f9; text-decoration:none; }
+#leftMenu .element a:active { color: #42575a; text-decoration:none; }
+#leftMenu .element a span {display: none;}
+
+
+#content
+{
+    float:left;
+    width: 75%;
+    background: #fff;
+    min-height: 300px;
+}
+
+#footer
+{
+    text-align: center;
+    background: #000;
+    height: 30px;
+    width: 100%;
+    color: #ddd;
+    font-size: x-small;
+    font-family: Helvetica, Verdana, sans-serif;
+    float: right;
+}
+
+

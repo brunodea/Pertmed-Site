@@ -1,29 +1,11 @@
-<html> 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+{% extends "basic/base.html" %}
+
 <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+{% block title %} {{ object.name }} - Perfil {% endblock %}
 
-<title>{{ object.name }}</title>
 
-<script type="text/javascript" src="/static/jquery.js"></script>
-
-<script type="text/javascript">
-
-$("document").ready(function(){
-						   
-	$(".pane .delete").click(function(){
-		$(this).parents(".pane").animate({ opacity: 'hide' }, "slow");
-	});
-
-});
-
-</script>
-
-</head>
-
-<body>
-
-<div class="pane">
+{% block content %}
     <h1>{{ object.name }}</h1>
     <dl>
     {% for item in object.item_set.all %}
@@ -33,16 +15,9 @@ $("document").ready(function(){
         {% endfor %}
     {% endfor %}
     </dl>
- 
-    <img src="/static/images/btn-delete.gif" alt="delete" class="delete" />
-
     <form action="change/" method="GET">
         <input type="submit" value="Change" />
     </form>
-</div>
+{% endblock %}
 
-
-
-</body>
-</html>
 

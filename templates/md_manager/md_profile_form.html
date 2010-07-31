@@ -1,78 +1,98 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+{% extends "basic/base.html" %}
 
-<title>{{object.name}}'s Profile</title>
+{% block title %} {{object.name}} - Configura&ccedil;&atilde;o de Perfil {% endblock %}
 
-<script type="text/javascript" src="/static/jquery.js"></script>
+{% block style %}
+    .accordion {
+	    width: 480px;
+	    border-bottom: solid 1px #c4c4c4;
+        margin: auto;
+        margin-bottom: 5px;
+    }
+    .accordion .form_item {
+	    background: #e9e7e7 url(/static/images/arrow-square.gif) no-repeat right -51px;
+	    padding: 7px 15px;
+	    margin: 0;
+	    font: bold 120%/100% Arial, Helvetica, sans-serif;
+	    border: solid 1px #c4c4c4;
+	    border-bottom: none;
+	    cursor: pointer;
+    }
+    .accordion .form_item:hover {
+	    background-color: #e3e2e2;
+    }
+    .accordion .form_item.active {
+	    background-position: right 5px;
+    }
+    .accordion .form_field {
+	    background: #f7f7f7;
+	    margin: 0;
+	    padding: 10px 15px 20px;
+	    border-left: solid 1px #c4c4c4;
+	    border-right: solid 1px #c4c4c4;
+    }
+{% endblock %}
 
-<script type="text/javascript">
+{% block script %}
+    $("document").ready(function(){
+						       
+        $(".accordion .form_item:first").addClass("active");
+	    $(".accordion .form_field:not(:first)").hide();
 
-$("document").ready(function(){
-						   
-    $(".accordion .form_item:first").addClass("active");
-	$(".accordion .form_field:not(:first)").hide();
+	    $(".accordion .form_item").click(function(){
+	      $(this).next(".form_field").slideToggle("slow")
+	      .siblings(".form_field:visible").slideUp("slow");
+	      $(this).toggleClass("active");
+	      $(this).siblings(".form_item").removeClass("active");
 
-	$(".accordion .form_item").click(function(){
-	  $(this).next(".form_field").slideToggle("slow")
-	  .siblings(".form_field:visible").slideUp("slow");
-	  $(this).toggleClass("active");
-	  $(this).siblings(".form_item").removeClass("active");
+	    });
 
-	});
+    });
+{% endblock %}
 
-});
+{% block content %}
+    {% if forms.errors %}
+        <p style="color: red;">
+            Please correct the error{{ forms.errors|pluralize }} below.
+        </p>
+    {% endif %}
+    {% if changed %}
+    <!-- ao invés disso podia ser tipo uma janela ou sei lá. -->
+        <p style="color: blue;">
+            Profile changed with Success!
+        </p>
+    {% endif %}
 
-</script>
+    <form action="." method="POST">
+    <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
+    {% csrf_token %}
+    <table>
+    <!-- Renderiza o campo "Name" do formulário. -->
+    <tr><td>{{ forms.name.label }}:</td><td> {{ forms.name }} </td>
+        <td><input type="submit" value="Change" /></td>
+    </tr>
+    </table>
 
-</head>
+    <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
+    <div class="accordion">
+        {% for item, fields in info_forms %}
+            <div class="form_item">
+            {% for label, info in item %}
+                <strong> {{ info }}{{ label }} </strong>
+            {% endfor %}
+            </div>
 
-<body>
-
-{% if forms.errors %}
-    <p style="color: red;">
-        Please correct the error{{ forms.errors|pluralize }} below.
-    </p>
-{% endif %}
-{% if changed %}
-<!-- ao invés disso podia ser tipo uma janela ou sei lá. -->
-    <p style="color: blue;">
-        Profile changed with Success!
-    </p>
-{% endif %}
-
-<form action="." method="POST">
-<!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
-{% csrf_token %}
-<table>
-<!-- Renderiza o campo "Name" do formulário. -->
-<tr><td>{{ forms.name.label }}:</td><td> {{ forms.name }} </td></tr>
-
-</table>
-
-<!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
-<div class="accordion">
-    {% for item, fields in info_forms %}
-        <div class="form_item">
-        {% for label, info in item %}
-            <strong> {{ label }}:{{ info }} </strong>
+            <div class="form_field">
+            <table>
+            {% for label, info in fields %}
+                <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
+            {% endfor %}
+            </table>
+            </div>
         {% endfor %}
-        </div>
+    </div>
 
-        <div class="form_field">
-        <table>
-        {% for label, info in fields %}
-            <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
-        {% endfor %}
-        </table>
-        </div>
-    {% endfor %}
-</div>
+    </form>
+{% endblock %}
 
-<input type="submit" value="Change" />
-</form>
-
-</body>
-</html>
 

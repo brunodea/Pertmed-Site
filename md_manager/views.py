@@ -7,7 +7,7 @@ from pertmed_site.md_manager.macros import informations, info_itens, info_fields
 
 def index(request):
     """ For now, this is the index page of PERTMED's site. """
-    return HttpResponse("Hello world! - Index of PERTMED's site.")
+    return render_to_response("basic/base.html")
 
 def login(request):
     """ Login page maybe shouldn't be here... """

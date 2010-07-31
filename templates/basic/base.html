@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel=Stylesheet href="/static/styles/base.css" type="text/css">
+<script type="text/javascript" src="/static/jquery.js"></script>
+
+<style type="text/css">
+    {% block style %}
+    {% endblock %}
+</style>
+
+<title>{% block title %} Bem Vindo! - Projeto Pertmed {% endblock %}</title>
+
+<script type="text/javascript">
+    {% block script %}{% endblock %}
+</script>
+
+</head>
+
+<body>
+    <div id="header">
+        <h1><center> Projeto PERTMED </center></h1>
+
+        <h5 align="right">
+            <a href="http://www.ufsm.br"> UFSM - </a>
+            <a href="http://gmobserver02.inf.ufsm.br:8082/features.html"> GMOB </a> 
+            <i> - Grupo de Sistemas de Computa&ccedil;&atilde;o M&oacute;vel</i>
+        </h5>
+        <br />
+        {% block login %}
+            <form action="/profile/2" method="GET">
+                Login: <input type="text" name="Login" value="Login" />
+                Senha: <input type="password" name="Senha" value="Senha" />
+                <input type="submit" value="Submit" />
+            </form>
+        {% endblock %}
+    </div>
+    
+    <div class="site_body">
+        <div id="leftMenu" align="center">
+            <div class="element">
+                <a href="/index"> Home </a>
+            </div>            
+            <div class="element">
+                <a href="#"> Sobre </a>
+            </div>
+            <div class="element">
+                <a href="#"> Desenvolvedores </a>
+            </div>
+            <div class="element">
+                <a href="http://www.ufsm.br">
+                <img src="/static/images/logo_UFSM.gif" width="90" height="90" style="opacity:0.6;filter:alpha(opacity=60)"/>
+                </a>
+            </div>
+        </div>
+        <div id="content">
+            {% block content %}
+                <h1> Bem Vindo! </h1>
+                <h3> Ao Site do Projeto PERTMED <h3>
+            {% endblock %}
+        </div>
+    </div>
+
+    <div id="footer">
+        GMOB - Grupo de Sistemas de Computa&ccedil;&atilde;o M&oacute;vel - 2010
+        <br>
+        Bruno Romero de Azevedo - Hugo S. P.
+    </div>
+</body>
+</html>
+

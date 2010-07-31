@@ -12,11 +12,6 @@ ul.errorlist {
     padding: 4px 5px;
 }
 
-body {
-	margin: 10px auto;
-	width: 570px;
-	font: 75%/120% Arial, Helvetica, sans-serif;
-}
 .accordion {
 	width: 480px;
 	border-bottom: solid 1px #c4c4c4;
