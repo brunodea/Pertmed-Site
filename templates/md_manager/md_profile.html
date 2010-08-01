@@ -1,23 +1,128 @@
-
 {% extends "basic/base.html" %}
 
 <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
 {% block title %} {{ object.name }} - Perfil {% endblock %}
 
+{% block style %}
+
+.accordion 
+{   
+    width: 75%;
+    border: solid 1px #c4c4c4;
+    margin: auto;
+    margin-bottom: 5px;
+}
+
+.accordion .profile_item
+{
+    background: #e9e7e7;
+    margin: auto;
+    cursor: pointer;
+    border-bottom: solid 1px #616161;
+}
+
+.accordion .profile_item:hover 
+{
+    background-color: #e3e2e2;
+}
+
+.accordion .profile_fields
+{
+    background: #f7f7f7;
+    margin: 0;
+    padding: 5px 1px 5px;
+}
+
+.accordion .profile_fields #pfs_field:hover
+{
+    background: #cfcfcf;
+}
+
+#profile_fields
+{
+    position: relative;
+    width: 50%;
+}
+
+#profile_fields #phone
+{
+    margin-left: 20px;
+    position: relative;
+    text-align: left;
+}
+
+#profile_fields #phone:hover
+{
+    background: #cfcfcf;
+}
+
+#profile_fields field_title
+{
+    margin-left: 10px;
+    font-size: 19px;
+    position: relative;
+    text-align: left;
+}
+
+{% endblock %}
+
+
+{% block script %}
+    $("document").ready(function(){
+        $(".accordion .profile_item:first").addClass("active");
+	    $(".accordion .profile_fields:not(:first)").hide();
+
+	    $(".accordion .profile_item").click(function(){
+	      $(this).next(".profile_fields").slideToggle("slow")
+	      .siblings(".profile_fields:visible").slideUp("slow");
+	      $(this).toggleClass("active");
+	      $(this).siblings(".profile_item").removeClass("active");
+
+	    });
+    });
+{% endblock %}
 
 {% block content %}
-    <h1>{{ object.name }}</h1>
-    <dl>
-    {% for item in object.item_set.all %}
-        <dt><strong>{{ item.name }}</strong>
-        {% for field in item.field_set.all %}
-            <dd><ul><li> {{ field.name }} </li></ul></dd>
+    <h2 align="center">{{ object.name }} - Profile</h2>
+    
+    <hr width="45%" align="right" />
+
+    <table align="right">
+        <tr><td>
+            <form action="change/" method="GET">
+            <input type="submit" value="Change Information" />
+            </form>
+        </td></tr>
+    </table>
+
+    <div id="profile_fields" align = "left">
+        <field_title><strong> Registered Phones: </strong></field_title>
+        {% for phone in object.phonenumber_set.all %}
+            <div id="phone">
+                <strong>Phone Number:</strong>
+                ({{ phone.region }}){{ phone.phone }}
+            </div>
         {% endfor %}
+    </div>
+
+    <br>
+
+    <h3 align="left"> &nbsp; Informations you want to receive: </h3>
+
+    <div class="accordion">
+    {% for item in object.item_set.all %}
+        <div class="profile_item">
+            <strong>{{ item.name }}</strong>
+        </div>
+        <div class="profile_fields">
+            {% for field in item.field_set.all %}
+                <div id="pfs_field">
+                    {{ field.name }}   
+                </div>             
+            {% endfor %}
+        </div>
     {% endfor %}
-    </dl>
-    <form action="change/" method="GET">
-        <input type="submit" value="Change" />
-    </form>
+    </div>
 {% endblock %}
 
 

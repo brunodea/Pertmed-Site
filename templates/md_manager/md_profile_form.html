@@ -1,17 +1,17 @@
 {% extends "basic/base.html" %}
 
-{% block title %} {{object.name}} - Configura&ccedil;&atilde;o de Perfil {% endblock %}
+{% block title %} {{object.name}} - Perfil Configuration {% endblock %}
 
 {% block style %}
     .accordion {
-	    width: 480px;
+	    width: 60%;
 	    border-bottom: solid 1px #c4c4c4;
         margin: auto;
         margin-bottom: 5px;
     }
     .accordion .form_item {
 	    background: #e9e7e7 url(/static/images/arrow-square.gif) no-repeat right -51px;
-	    padding: 7px 15px;
+	    padding: 2px 5px;
 	    margin: 0;
 	    font: bold 120%/100% Arial, Helvetica, sans-serif;
 	    border: solid 1px #c4c4c4;
@@ -27,7 +27,7 @@
     .accordion .form_field {
 	    background: #f7f7f7;
 	    margin: 0;
-	    padding: 10px 15px 20px;
+	    padding: 2px 5px 5px;
 	    border-left: solid 1px #c4c4c4;
 	    border-right: solid 1px #c4c4c4;
     }
@@ -51,6 +51,9 @@
 {% endblock %}
 
 {% block content %}
+    <h2 align="center"> Alterar Perfil </h2>
+    <hr width="75%" align="center" />    
+
     {% if forms.errors %}
         <p style="color: red;">
             Please correct the error{{ forms.errors|pluralize }} below.
@@ -66,24 +69,39 @@
     <form action="." method="POST">
     <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
     {% csrf_token %}
-    <table>
+    <table align="center">
     <!-- Renderiza o campo "Name" do formulário. -->
-    <tr><td>{{ forms.name.label }}:</td><td> {{ forms.name }} </td>
-        <td><input type="submit" value="Change" /></td>
-    </tr>
+        <tr>
+            <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
+            <td><input type="submit" value="Done" /></td>
+        </tr>    
+        {% for phone in phone_forms %}
+            <tr><td>Phone Number:</td><td>{{ phone }} 
+                {% if phone.errors %}
+                   <td style="color: red;">{{ phone.errors }}</td>
+                {% endif %} 
+           </td></tr> 
+        {% endfor %}
+        <tr>
+            <td>Add Phone</td>
+            <td><input type="checkbox" name="addphone" /></td>
+        </tr>
     </table>
+
+
+    <h3> &nbsp;  Select the data you want to receive: </h3>
 
     <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
     <div class="accordion">
         {% for item, fields in info_forms %}
             <div class="form_item">
             {% for label, info in item %}
-                <strong> {{ info }}{{ label }} </strong>
+                <strong><!-- {{ info }}-->{{ label }} </strong>
             {% endfor %}
             </div>
 
             <div class="form_field">
-            <table>
+            <table align="center">
             {% for label, info in fields %}
                 <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
             {% endfor %}

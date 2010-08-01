@@ -41,7 +41,7 @@ body
 
 .site_body
 {
-    background: #bbc3c4;   
+    background: #d3d5d5;   
     width: 100%;
     float: left;
     min-height: 100px;
@@ -70,12 +70,16 @@ body
     padding: 5px;
 }
 
+#leftMenu .element:hover
+{
+    background: #c3c5c5;
+}
 
 #leftMenu .element a:link { color: #42575a; text-decoration:none; }
 #leftMenu .element a:visited { color: #42575a; text-decoration:none; }
 #leftMenu .element a:hover { color: #f4f8f9; text-decoration:none; }
 #leftMenu .element a:active { color: #42575a; text-decoration:none; }
-#leftMenu .element a span {display: none;}
+#leftMenu .element a span { display: none; }
 
 
 #content

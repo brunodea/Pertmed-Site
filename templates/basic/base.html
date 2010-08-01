@@ -12,7 +12,7 @@
     {% endblock %}
 </style>
 
-<title>{% block title %} Bem Vindo! - Projeto Pertmed {% endblock %}</title>
+<title>{% block title %} Welcome! - PERTMED Project {% endblock %}</title>
 
 <script type="text/javascript">
     {% block script %}{% endblock %}
@@ -22,7 +22,7 @@
 
 <body>
     <div id="header">
-        <h1><center> Projeto PERTMED </center></h1>
+        <h1><center> PERTMED Project </center></h1>
 
         <h5 align="right">
             <a href="http://www.ufsm.br"> UFSM - </a>
@@ -31,9 +31,9 @@
         </h5>
         <br />
         {% block login %}
-            <form action="/profile/2" method="GET">
-                Login: <input type="text" name="Login" value="Login" />
-                Senha: <input type="password" name="Senha" value="Senha" />
+            <form action="/profile/1" method="GET">
+                Login <input type="text" name="Login" value="Login" />
+                Password <input type="password" name="Senha" value="Senha" />
                 <input type="submit" value="Submit" />
             </form>
         {% endblock %}
@@ -45,21 +45,30 @@
                 <a href="/index"> Home </a>
             </div>            
             <div class="element">
-                <a href="#"> Sobre </a>
+                <a href="#"> About </a>
             </div>
             <div class="element">
-                <a href="#"> Desenvolvedores </a>
+                <a href="#"> Developers </a>
             </div>
             <div class="element">
+                <a href="#"> Contact </a>
+            </div>
+            <div class="element" border_bottom="none;">
                 <a href="http://www.ufsm.br">
-                <img src="/static/images/logo_UFSM.gif" width="90" height="90" style="opacity:0.6;filter:alpha(opacity=60)"/>
+                <img src="/static/images/logo_UFSM.gif" width="90" height="90" style="opacity:0.7;filter:alpha(opacity=70)"/>
                 </a>
+                <a href="http://www.inf.ufsm.br">
+                <img src="/static/images/logo_inf.jpeg" style="opacity:0.7;filter:alpha(opacity=70)"/>
+                </a>
+        
             </div>
         </div>
         <div id="content">
             {% block content %}
-                <h1> Bem Vindo! </h1>
-                <h3> Ao Site do Projeto PERTMED <h3>
+                <center>
+                <h1> Welcome! </h1>
+                <h3> PERTMED Project <h3>
+                </center>
             {% endblock %}
         </div>
     </div>

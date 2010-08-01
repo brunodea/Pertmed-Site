@@ -110,3 +110,10 @@ informations = [(info_itens[0], info_fields[0]), (info_itens[1], info_fields[1])
                 (info_itens[6], info_fields[6]), (info_itens[7], info_fields[7]),
                 (info_itens[8], info_fields[8])]
 
+infos_dic = {info_itens[0]: info_fields[0], info_itens[1]: info_fields[1],
+             info_itens[2]: info_fields[2], info_itens[3]: info_fields[3],
+             info_itens[4]: info_fields[4], info_itens[5]: info_fields[5],
+             info_itens[6]: info_fields[6], info_itens[7]: info_fields[7],
+             info_itens[8]: info_fields[8]}
+
+
