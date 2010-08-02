@@ -9,8 +9,8 @@ class Doctor(models.Model):
 
 class PhoneNumber(models.Model):
     doctor = models.ForeignKey(Doctor)
-    region = models.IntegerField(max_length=2)
-    phone = models.IntegerField(max_length=8)
+    region = models.CharField(max_length=2)
+    phone = models.CharField(max_length=8)
 
     def __unicode__(self):
         return '(' + str(self.region) + ')' + str(self.phone)

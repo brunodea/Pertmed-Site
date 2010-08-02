@@ -25,7 +25,7 @@ def profilePOSTHandler(request, doctor, forms):
 
     #copia os elementos do dicionario(imutavel) request.POST para um dicionario
     #mutavel.
-    new_request = checkPhoneForm(request).copy()
+    new_request = checkPhoneForm(request)
 
     #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
     #pelo medico.
@@ -55,7 +55,7 @@ def profilePOSTHandler(request, doctor, forms):
     #E caso o telefone ja estava no BD soh que nao esta no "new_request", significa
     #que ele foi deletado. Entao, ele eh deletado do BD.
     for phone in doc_phones:
-        phone_number = str(phone.region) + str(phone.phone)
+        phone_number = phone.region + phone.phone
         deleted_phone = True
 
         for phone_form in phone_list:
@@ -93,8 +93,8 @@ def profilePOSTHandler(request, doctor, forms):
         elif part[0] == 'Phone':
             phone = new_request[elem]
 
-            region = int(phone[:2])
-            number = int(phone[2:])
+            region = phone[:2]
+            number = phone[2:]
 
             doc_phone = doctor.phonenumber_set.filter(region=region, phone=number)   
             if not doc_phone:
@@ -154,7 +154,7 @@ def profile_change(request, object_id, template_name='md_manager/md_profile_form
                 dic_form[name] = [u'on']
         i = 0
         for phone in doc_phones:
-            phone_number = str(phone.region) + str(phone.phone)
+            phone_number = phone.region + phone.phone
             dic_form['Phone_' + str(i)] = phone_number
             i += 1
         if not doc_phones:
