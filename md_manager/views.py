@@ -13,7 +13,7 @@ def login(request):
     """ Login page maybe shouldn't be here... """
     return HttpResponse("Login Page!")
 
-def profilePOSTHandler(request, doctor):
+def profilePOSTHandler(request, doctor, forms):
     """ Lida com as informacoes do request.POST enviadas via formulario 
         do perfil do usuario """
 
@@ -25,14 +25,17 @@ def profilePOSTHandler(request, doctor):
 
     #copia os elementos do dicionario(imutavel) request.POST para um dicionario
     #mutavel.
-    new_request = request.POST.copy()
+    new_request = checkPhoneForm(request).copy()
 
+    #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
+    #pelo medico.
     doc_itens = doctor.item_set.all()
     for item in doc_itens:  
         for field in item.field_set.all():
             f = field.name + '_' + item.name
             #caso o campo em questao esteja marcado no formulario e como medico ja 
-            #tinha previamente ele, este campo eh deletado do dicionario. Se nao,
+            #tinha previamente ele, este campo eh deletado do dicionario
+            #(para evitar duplicacoes e aumentar levemente a velocidade do algoritmo). Se nao,
             #este campo eh deletado do Banco de Dados, pois pressupoe-se que o 
             #medico tenha desmarcado esta opcao no formulario.
             if f in new_request:
@@ -41,31 +44,33 @@ def profilePOSTHandler(request, doctor):
                 field.delete()
         if not item.field_set.all():
             item.delete()
-        #mesmo que para os campos, so que relacionado aos itens.
-#        if item.name in new_request:
-#            del new_request[item.name]
-#        else:
-#            item.delete()
+
     doc_phones = doctor.phonenumber_set.all()
     phone_number = ''
+    #faz uma copia de "forms.phone_list".
+    phone_list = list(forms.phone_list) 
+
+    #remove do dicionario "new_request" os formularios cujo numero do telefone
+    #ja esteja no BD com o medico (Evitando duplicacoes).
+    #E caso o telefone ja estava no BD soh que nao esta no "new_request", significa
+    #que ele foi deletado. Entao, ele eh deletado do BD.
     for phone in doc_phones:
         phone_number = str(phone.region) + str(phone.phone)
         deleted_phone = True
-        for i in range(0, 100):
-            phn = 'Phone_' + str(i)
-            if not phn in new_request:
-                break
-            if phone_number == new_request[phn]:
-                del new_request[phn]
+
+        for phone_form in phone_list:
+            if phone_number == new_request[phone_form.label]:
+                del new_request[phone_form.label] 
+                phone_list.remove(phone_form) #para aumento de desempenho
                 deleted_phone = False
                 break
         if deleted_phone:
             phone.delete()
 
-    #Adiciona um campo e/ou um item caso o medico tenha-os
-    #marcado no formulario.
+    #Adiciona ao BD as informacoes adicionadas pelo medico.
     for elem in new_request:
         part = elem.partition('_')
+        #Faz a lida com os itens e campos.
         if part[2] and part[0] != 'Phone':
             doc_item = doctor.item_set.filter(name=part[2])
             if not doc_item:
@@ -84,13 +89,13 @@ def profilePOSTHandler(request, doctor):
                     field.save()
                     doc_item[0].field_set.add(field)
                     doc_item[0].save()
+        #Faz a lida com os numeros de telefone.
         elif part[0] == 'Phone':
             phone = new_request[elem]
-            if not phone.isdigit():
-                continue
 
             region = int(phone[:2])
             number = int(phone[2:])
+
             doc_phone = doctor.phonenumber_set.filter(region=region, phone=number)   
             if not doc_phone:
                 new_phone = PhoneNumber(region=region, phone=number, doctor=doctor)
@@ -107,14 +112,17 @@ def profile(request, object_id, template_name='md_manager/md_profile.html'):
 
 
 def checkPhoneForm(request):
+    """ Verifica se as informacoes sobre os telefones no formulario estao corretas
+        Caso nao, aquele item eh removido do Request """
     new_request = request.POST.copy()
 
-    for i in range(0, 100):
+    #Se tiver mais de 10 campos para telefones as verificacoes nao sao feitas.
+    for i in range(0, 10):
         phn = 'Phone_' + str(i)
         if not phn in request.POST:
             break
 
-        if not request.POST[phn].isdigit() or len(request.POST[phn]) != 10:
+        if not new_request[phn].isdigit() or len(new_request[phn]) != 10:
             del new_request[phn]
 
     return new_request
@@ -127,14 +135,13 @@ def profile_change(request, object_id, template_name='md_manager/md_profile_form
     dic_form = {}
     doc_phones = doctor.phonenumber_set.all()
     
-    #verifica se o formulario enviado pelo usuario eh valido e faz as acoes necessarias.
     if request.method == 'POST':
         forms = ProfileForm(checkPhoneForm(request))
         if 'addphone' in request.POST:
             forms.add_phoneNumber()
 
         if forms.is_valid():
-            profilePOSTHandler(request, doctor)
+            profilePOSTHandler(request, doctor, forms)
             changed = True
     else:
         dic_form = {'name': doctor.name}
@@ -151,13 +158,11 @@ def profile_change(request, object_id, template_name='md_manager/md_profile_form
             dic_form['Phone_' + str(i)] = phone_number
             i += 1
         if not doc_phones:
-            dic_form['Phone_0'] = 'Phone Num'
+            dic_form['Phone_0'] = '----------'
         
         forms = ProfileForm(dic_form)
 
     forms.add_phoneNumber(howmany=len(doc_phones) - 1)
-
-        
 
     info_forms = []
     #atualiza a lista 'info_forms' para que a forma como o formulario eh apresentado
@@ -170,9 +175,9 @@ def profile_change(request, object_id, template_name='md_manager/md_profile_form
         info_forms.append(([(item, forms[item])], f_list))
 
     phone_forms = []
-    for i in range(0, len(forms.phone_list)):
-        phn = 'Phone_' + str(i)
-        phone_forms.append(forms[phn])
+
+    for phonef in forms.phone_list:
+        phone_forms.append(forms[phonef.label])
 
     return render_to_response(template_name, {'object': doctor, 'forms': forms, 'info_forms': info_forms,
                               'phone_forms': phone_forms, 'changed': changed},

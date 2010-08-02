@@ -2,6 +2,7 @@
 
 {% block title %} {{object.name}} - Perfil Configuration {% endblock %}
 
+<!-- Estilo da página. -->
 {% block style %}
     .accordion {
 	    width: 60%;
@@ -33,6 +34,7 @@
     }
 {% endblock %}
 
+<!-- Script do JQuery. (Accordion) -->
 {% block script %}
     $("document").ready(function(){
 						       
@@ -60,7 +62,8 @@
         </p>
     {% endif %}
     {% if changed %}
-    <!-- ao invés disso podia ser tipo uma janela ou sei lá. -->
+    <!-- ao invés disso podia ser tipo uma janela de mensagem
+         ou algo assim. -->
         <p style="color: blue;">
             Profile changed with Success!
         </p>
@@ -75,6 +78,8 @@
             <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
             <td><input type="submit" value="Done" /></td>
         </tr>    
+
+    <!-- Renderiza os campos "Phone Number" do formulário. -->
         {% for phone in phone_forms %}
             <tr><td>Phone Number:</td><td>{{ phone }} 
                 {% if phone.errors %}
