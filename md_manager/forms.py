@@ -20,7 +20,7 @@ class ProfileForm(forms.Form):
         for i in range(0, len(self.phone_list)):
             self.fields[self.phone_list[i].label] = self.phone_list[i]
 
-    def add_phoneNumber(self, howmany=1):
+    def add_phoneNumber(self, howmany=1, form=None):
         init = len(self.phone_list)
         for i in range(init, howmany + init):
             phone_number = forms.CharField(required=False, label='Phone_' + str(i), max_length=10)

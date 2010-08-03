@@ -33,17 +33,17 @@
 
 <!-- Script do JQuery. (Accordion) -->
 {% block script %}
-    jQuery(document).ready(function(){
+    $("document").ready(function(){
 						       
         $(".accordion .form_item:first").addClass("active");
 	    $(".accordion .form_field:not(:first)").hide();
 
 	    $(".accordion .form_item").click(function(){
-	          $(this).next().toggle("slow")
-	          .siblings(".form_field:visible").slideUp("slow");
-	          $(this).toggleClass("active");
-	          $(this).siblings(".form_item").removeClass("active");
-	    }).next().hide();
+            $(this).next().toggle("slow")
+               .siblings(".form_field:visible").slideUp("slow");
+               $(this).toggleClass("active");
+               $(this).siblings(".form_item").removeClass("active");
+        });
     });
 {% endblock %}
 

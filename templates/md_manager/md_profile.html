@@ -69,64 +69,189 @@
     text-align: left;
 }
 
+.profile_change #button_add_phone
+{
+    position: relative;
+    width: 16.5%;
+    margin-left: 83.5%;
+}
+
+.profile_change #form_table #delete_phone
+{
+    color: blue;
+    cursor: pointer;
+}
+
+
 {% endblock %}
 
 
 {% block script %}
-    $("document").ready(function(){
+
+    jQuery(document).ready(function(){
         $(".accordion .profile_item:first").addClass("active");
 	    $(".accordion .profile_fields:not(:first)").hide();
 
 	    $(".accordion .profile_item").click(function(){
 	      $(this).next(".profile_fields").slideToggle("slow")
-	      .siblings(".profile_fields:visible").slideUp("slow");
+    	      .siblings(".profile_fields:visible").slideUp("slow");
 	      $(this).toggleClass("active");
 	      $(this).siblings(".profile_item").removeClass("active");
 	    });
     });
+
+    jQuery(document).ready(function(){
+        {% if not phoneform_errors %}
+            $(".profile_change").hide();
+        {% else %}
+            $(".profile").hide();
+        {% endif %}
+
+        $(".profile .profile_change_button").click(function(){ 
+            $(".profile").hide();
+            $(".profile_change").show();
+        });
+    });
+
+    jQuery(document).ready(function(){
+        $(".profile_change #button_add_phone").click(function(){
+        var c = $(".profile_change #form_table tr").length - 1;
+            $(".profile_change #form_table > table:last")
+            .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
+                "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
+                "<td><div id='delete_phone'> delete </div></td></tr>");
+        });
+    });
+    jQuery(document).ready(function(){
+        $(".profile_change #form_table #delete_phone").live('click', function(event) {
+                $(this).parent().parent().remove();
+        });
+    });
+
 {% endblock %}
 
 {% block content %}
-    <h2 align="center">{{ object.name }} - Profile</h2>
     
-    <hr width="45%" align="right" />
+    <div class="profile">    
+        <h2 align="center">{{ object.name }} - Profile</h2>
 
-    <table align="right">
-        <tr><td>
-            <form action="change/" method="GET">
+        {% if changed %}
+        <!-- ao invés disso podia ser tipo uma janela de mensagem
+             ou algo assim. -->
+            <p style="color: blue;" align="right">
+                Profile changed with Success!
+            </p>
+        {% endif %}
+
+        
+        <div class="profile_change_button" align="right">
             <input type="submit" value="Change Information" />
-            </form>
-        </td></tr>
-    </table>
+        </div>   
 
-    <div id="profile_fields" align = "left">
-        <field_title><strong> Registered Phones: </strong></field_title>
-        {% for phone in object.phonenumber_set.all %}
-            <div id="phone">
-                <strong>Phone Number:</strong>
-                ({{ phone.region }}){{ phone.phone }}
-            </div>
-        {% endfor %}
-    </div>
+        
+        <hr width="45%" align="right" />
 
-    <br>
-
-    <h3 align="left"> &nbsp; Informations you want to receive: </h3>
-
-    <div class="accordion">
-    {% for item in object.item_set.all %}
-        <div class="profile_item">
-            <strong>{{ item.name }}</strong>
-        </div>
-        <div class="profile_fields">
-            {% for field in item.field_set.all %}
-                <div id="pfs_field">
-                    {{ field.name }}   
-                </div>             
+        <div id="profile_fields" align = "left">
+            <field_title><strong> Registered Phones: </strong></field_title>
+            {% for phone in object.phonenumber_set.all %}
+                <div id="phone">
+                    <strong>Phone Number:</strong>
+                    ({{ phone.region }}){{ phone.phone }}
+                </div>
             {% endfor %}
         </div>
-    {% endfor %}
-    </div>
-{% endblock %}
 
+        <br>
+
+        <h3 align="left"> &nbsp; Informations you want to receive: </h3>
+  
+        <div class="accordion">
+            {% for item in object.item_set.all %}
+                <div class="profile_item">
+                    <strong>{{ item.name }}</strong>
+                </div>
+                <div class="profile_fields">
+                    {% for field in item.field_set.all %}
+                        <div id="pfs_field">
+                            {{ field.name }}   
+                        </div>             
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="profile_change">
+ 
+        {% if forms.errors %}
+            <p style="color: red;">
+                Please correct the error{{ forms.errors|pluralize }} below.
+            </p>
+        {% endif %}
+
+        <form action="." method="POST">
+        <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
+        {% csrf_token %}
+        <div id="form_table">
+            <table align="center">
+            <!-- Renderiza o campo "Name" do formulário. -->
+                <tr>
+                    <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
+
+                    <div class="profile_done_button">
+                        <td><input type="submit" value="Done" /></td>
+                    </div>
+                </tr>    
+
+            <!-- Renderiza os campos "Phone Number" do formulário. -->
+                {% for phone in phone_forms %}
+                    <tr id="{{phone.label}}_row">
+                        <td>Phone Number:</td>
+                        <td>{{ phone }} 
+                            {% for label, error_msg in phoneform_errors %}
+                                {% if phone.label == label %}
+                                    <td style="color: red;">{{ error_msg }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            {% if phone.errors %}
+                               <td style="color: red;">{{ phone.errors }}</td>
+                            {% endif %} 
+                        </td>
+                        {% if forloop.counter > 1 %}
+                            <td><div id="delete_phone"> delete </div></td>
+                        {% endif %}
+                    </tr> 
+                {% endfor %}
+            </table>
+        </div>
+
+
+        <div id="button_add_phone">
+            <button type="button">Add Phone</button>
+        </div>
+        <h3> &nbsp;  Select the data you want to receive: </h3>
+
+        <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
+        <div class="accordion">
+            {% for item, fields in info_forms %}
+                <div class="profile_item">
+                {% for label, info in item %}
+                    <strong><!-- {{ info }}-->{{ label }}</strong>
+                {% endfor %}
+                </div>
+
+                <div class="profile_fields">
+                <table align="center">
+                {% for label, info in fields %}
+                    <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
+                {% endfor %}
+                </table>
+                </div>
+            {% endfor %}
+        </div>
+
+        </form>
+    </div>
+
+{% endblock %}
 

@@ -59,6 +59,9 @@ def profilePOSTHandler(request, doctor, forms):
         deleted_phone = True
 
         for phone_form in phone_list:
+ #           if not phone_form.label in new_request:
+            
+
             if phone_number == new_request[phone_form.label]:
                 del new_request[phone_form.label] 
                 phone_list.remove(phone_form) #para aumento de desempenho
@@ -106,9 +109,70 @@ def profilePOSTHandler(request, doctor, forms):
 
 def profile(request, object_id, template_name='md_manager/md_profile.html'):
     """ Shows the doctor's profile. """
+    #medico em questao.
     doctor = get_object_or_404(Doctor, pk=object_id)
+    changed = False
 
-    return render_to_response(template_name, {'object': doctor})
+    dic_form = {}
+    doc_phones = doctor.phonenumber_set.all()
+    num_phonef = len(doc_phones) - 1
+    phonef_error_messages = []
+    
+    if request.method == 'POST':
+        check_phoneforms = checkPhoneForm(request)
+        new_request = check_phoneforms[0]
+        phonef_error_messages = check_phoneforms[1]
+
+        forms = ProfileForm(new_request)
+
+        if not phonef_error_messages and forms.is_valid():
+            profilePOSTHandler(request, doctor, forms)
+            changed = True
+        cont = 0
+        for elem in new_request:
+            if elem.startswith('Phone_'):
+                cont += 1
+        num_phonef = cont - 1
+    else:
+        dic_form = {'name': doctor.name}
+        #o dicionario 'dic_form' eh atualizado para que as opcoes ja relacionadas
+        #ao medico em questao estejam marcadas no formulario.
+        for item in doctor.item_set.all():
+            dic_form[item.name] = [u'on']
+            for field in item.field_set.all():
+                name = field.name + '_' + item.name
+                dic_form[name] = [u'on']
+        i = 0
+        for phone in doc_phones:
+            phone_number = phone.region + phone.phone
+            dic_form['Phone_' + str(i)] = phone_number
+            i += 1
+        if not doc_phones:
+            dic_form['Phone_0'] = '----------'
+        
+        forms = ProfileForm(dic_form)
+
+    forms.add_phoneNumber(howmany=num_phonef)
+
+    info_forms = []
+    #atualiza a lista 'info_forms' para que a forma como o formulario eh apresentado
+    #seja mais maleavel no template.
+    for item, fields in informations:
+        f_list = []
+        for field in fields:
+            f = field + '_' + item
+            f_list.append((field, forms[f]))
+        info_forms.append(([(item, forms[item])], f_list))
+
+    phone_forms = []
+
+    for phonef in forms.phone_list:
+        phone_forms.append(forms[phonef.label])
+
+    return render_to_response(template_name, {'object': doctor, 'forms': forms, 'info_forms': info_forms,
+                              'phone_forms': phone_forms, 'changed': changed,
+                              'phoneform_errors': phonef_error_messages},
+                              context_instance = RequestContext(request))
 
 
 def checkPhoneForm(request):
@@ -118,8 +182,8 @@ def checkPhoneForm(request):
 
     error_messages = []
 
-    #Se tiver mais de 10 campos para telefones as verificacoes nao sao feitas.
-    for i in range(0, 10):
+    #Se tiver mais de 30 campos para telefones as verificacoes do excedente nao sao feitas.
+    for i in range(0, 30):
         phn = 'Phone_' + str(i)
         if not phn in request.POST:
             break
@@ -128,11 +192,9 @@ def checkPhoneForm(request):
             continue
 
         if not new_request[phn].isdigit():
- #           del new_request[phn]
             error_messages.append((phn, 'Please, only digits.'))
 
         elif len(new_request[phn]) != 10:
-#            del new_request[phn]
             error_messages.append((phn, 'Must be exact 10 digits.'))
 
     return (new_request, error_messages)
