@@ -15,15 +15,20 @@
 
 .accordion .profile_item
 {
-    background: #e9e7e7;
+    background: #e9e7e7 url(/static/images/arrow-square.gif) no-repeat right -51px;
     margin: auto;
     cursor: pointer;
-    border-bottom: solid 1px #616161;
+    border-bottom: solid 1px #c4c4c4;
 }
 
 .accordion .profile_item:hover 
 {
     background-color: #e3e2e2;
+}
+
+.accordion .profile_item.active 
+{
+    background-position: right 5px;
 }
 
 .accordion .profile_fields
@@ -77,7 +82,6 @@
 	      .siblings(".profile_fields:visible").slideUp("slow");
 	      $(this).toggleClass("active");
 	      $(this).siblings(".profile_item").removeClass("active");
-
 	    });
     });
 {% endblock %}
