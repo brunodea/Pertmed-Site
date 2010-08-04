@@ -9,10 +9,12 @@ body
 
 #header
 {
+    
+    -moz-border-radius: 16px 16px 0px 0px;
     background-image: url("../images/header.jpeg");
     min-height: 120px;
     width: 99.9%;
-    border-top: solid 1px #204e53;
+    -moz-box-shadow: #bfbfbf 0.3em 0.3em 0.3em
 }
 
 #header h1
@@ -24,7 +26,7 @@ body
 #header h5
 {
     margin: auto;
-    color: #f4f8f9;
+    color: #517279;
     margin-right: 10px;
 }
 
@@ -34,10 +36,10 @@ body
     margin: 10px;
 }
 
-#header h5 a:link { color: #ccc; text-decoration:none; }
-#header h5 a:visited { color: #ccc; text-decoration:none; }
+#header h5 a:link { color: #888f91; text-decoration:none; }
+#header h5 a:visited { color: #888f91; text-decoration:none; }
 #header h5 a:hover { color: #fff; text-decoration:none; }
-#header h5 a:active { color: #ccc; text-decoration:none; }
+#header h5 a:active { color: #888f91; text-decoration:none; }
 
 .site_body
 {
@@ -45,6 +47,7 @@ body
     width: 100%;
     float: left;
     min-height: 100px;
+    -moz-box-shadow: #bfbfbf 0.2em 0.2em 0.2em 
 }
 
 #leftMenu
@@ -100,6 +103,8 @@ body
     font-size: x-small;
     font-family: Helvetica, Verdana, sans-serif;
     float: right;
+    -moz-border-radius: 0px 0px 6px 6px;
+    -moz-box-shadow: #bfbfbf 0.5em 0.5em 0.5em;
 }
 
 

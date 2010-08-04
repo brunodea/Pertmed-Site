@@ -1,12 +1,13 @@
 {% extends "basic/base.html" %}
 
 <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+
 {% block title %} {{ object.name }} - Perfil {% endblock %}
 
 {% block style %}
 
 .accordion 
-{   
+{
     width: 75%;
     border: solid 1px #c4c4c4;
     margin: auto;
@@ -78,10 +79,14 @@
 
 .profile_change #form_table #delete_phone
 {
-    color: blue;
     cursor: pointer;
 }
 
+.profile_change #add_phone
+{
+    color: blue;
+    cursor: pointer;
+}
 
 {% endblock %}
 
@@ -114,17 +119,30 @@
     });
 
     jQuery(document).ready(function(){
-        $(".profile_change #button_add_phone").click(function(){
-        var c = $(".profile_change #form_table tr").length - 1;
+        $(".profile_change #add_phone").click(function(){
+            var c = $(".profile_change #form_table tr:last").attr("id");
+            var strs = c.split("_",3);
+            c = parseInt(strs[1]) + 1;
+
             $(".profile_change #form_table > table:last")
             .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
                 "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
-                "<td><div id='delete_phone'> delete </div></td></tr>");
+                "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' /></td></tr>");
+
         });
     });
+
     jQuery(document).ready(function(){
         $(".profile_change #form_table #delete_phone").live('click', function(event) {
-                $(this).parent().parent().remove();
+            var c = $(".profile_change #form_table tr").length - 1;
+
+            if(c == 1) {
+                jAlert("You must have at least one phone number.", "Alert");
+            } 
+            else {
+                var id = $(this).parent().parent().attr("id");
+                $(".profile_change #form_table #" + id).remove();
+            }
         });
     });
 
@@ -139,7 +157,11 @@
         <!-- ao invés disso podia ser tipo uma janela de mensagem
              ou algo assim. -->
             <p style="color: blue;" align="right">
-                Profile changed with Success!
+                <script> 
+                    jQuery(document).ready(function(){
+                        jAlert("Profile changed with success!","Information");
+                    });
+                </script>
             </p>
         {% endif %}
 
@@ -193,42 +215,34 @@
         <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
         {% csrf_token %}
         <div id="form_table">
-            <table align="center">
+            <table align="center" border="0">
             <!-- Renderiza o campo "Name" do formulário. -->
                 <tr>
                     <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
-
-                    <div class="profile_done_button">
-                        <td><input type="submit" value="Done" /></td>
-                    </div>
+                    <td><div class="profile_done_button"><input type="submit" value="Done" /></div></td>
                 </tr>    
 
             <!-- Renderiza os campos "Phone Number" do formulário. -->
                 {% for phone in phone_forms %}
-                    <tr id="{{phone.label}}_row">
-                        <td>Phone Number:</td>
-                        <td>{{ phone }} 
+                        {% if phone.errors %}
+                           <tr id="{{phone.label}}_row"><td style="color: red;">{{ phone.errors }}</td></tr>
+                        {% else %} 
                             {% for label, error_msg in phoneform_errors %}
                                 {% if phone.label == label %}
-                                    <td style="color: red;">{{ error_msg }}</td>
+                                    <tr id="{{phone.label}}_row"><td style="color: red;">{{ error_msg }}</td></tr>
                                 {% endif %}
                             {% endfor %}
-                            {% if phone.errors %}
-                               <td style="color: red;">{{ phone.errors }}</td>
-                            {% endif %} 
-                        </td>
-                        {% if forloop.counter > 1 %}
-                            <td><div id="delete_phone"> delete </div></td>
                         {% endif %}
+                    <tr id="{{phone.label}}_row">
+                        <td>Phone Number:</td>
+                        <td>{{ phone }}</td>
+                        <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" /></td>
                     </tr> 
                 {% endfor %}
             </table>
         </div>
+        <center><img id="add_phone" src="/static/images/add.png" alt="Add Phone"/></center>
 
-
-        <div id="button_add_phone">
-            <button type="button">Add Phone</button>
-        </div>
         <h3> &nbsp;  Select the data you want to receive: </h3>
 
         <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
