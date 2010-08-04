@@ -22,6 +22,19 @@
     {% block script %}{% endblock %}
 </script>
 
+<script type="text/javascript">
+    
+    jQuery(document).ready(function(){
+        $(".site_body #leftMenu #login_form").hide()
+    
+        $(".site_body #leftMenu #login").click(function(){    
+            $(this).next(".site_body #leftMenu #login_form").slideToggle("fast")
+              .siblings(".site_body #lleftMenu #login_form:visible").slideUp("fast");
+        });
+    });
+</script>
+
+
 </head>
 
 <body>
@@ -34,20 +47,27 @@
             <i> - Grupo de Sistemas de Computa&ccedil;&atilde;o M&oacute;vel</i>
         </h5>
         <br />
-        {% block login %}
-            <form action="/profile/1" method="GET">
-                Login <input type="text" name="Login" value="Login" />
-                Password <input type="password" name="Senha" value="Senha" />
-                <input type="submit" value="Submit" />
-            </form>
-        {% endblock %}
     </div>
     
     <div class="site_body">
         <div id="leftMenu" align="center">
+            {% block login %}
+                <div class="element" id="login">
+                    Enter
+                </div>           
+
+                <div class="element" id="login_form">
+                    <form action="/profile/1" method="GET">
+                        Login <input type="text" name="Login" value="Login" />
+                        Password <input type="password" name="Senha" value="Senha" />
+                        <input type="submit" value="Submit" />
+                    </form> 
+                </div>
+            {% endblock %}                
+
             <div class="element">
-                <a href="/index"> Home </a>
-            </div>            
+                <a href="/index/"> Home </a>
+            </div>
             <div class="element">
                 <a href="#"> About </a>
             </div>

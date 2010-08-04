@@ -154,8 +154,6 @@
         <h2 align="center">{{ object.name }} - Profile</h2>
 
         {% if changed %}
-        <!-- ao invés disso podia ser tipo uma janela de mensagem
-             ou algo assim. -->
             <p style="color: blue;" align="right">
                 <script> 
                     jQuery(document).ready(function(){
@@ -167,7 +165,7 @@
 
         
         <div class="profile_change_button" align="right">
-            <input type="submit" value="Change Information" />
+            <button type="button">Change Information</button>
         </div>   
 
         
@@ -188,12 +186,12 @@
         <h3 align="left"> &nbsp; Informations you want to receive: </h3>
   
         <div class="accordion">
-            {% for item in object.item_set.all %}
+            {% for item, fields in object_itens_fields %}
                 <div class="profile_item">
                     <strong>{{ item.name }}</strong>
                 </div>
                 <div class="profile_fields">
-                    {% for field in item.field_set.all %}
+                    {% for field in fields %}
                         <div id="pfs_field">
                             {{ field.name }}   
                         </div>             
@@ -249,9 +247,7 @@
         <div class="accordion">
             {% for item, fields in info_forms %}
                 <div class="profile_item">
-                {% for label, info in item %}
-                    <strong><!-- {{ info }}-->{{ label }}</strong>
-                {% endfor %}
+                    <strong> {{ item }} </strong>
                 </div>
 
                 <div class="profile_fields">

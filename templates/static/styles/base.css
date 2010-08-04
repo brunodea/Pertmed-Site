@@ -9,7 +9,6 @@ body
 
 #header
 {
-    
     -moz-border-radius: 16px 16px 0px 0px;
     background-image: url("../images/header.jpeg");
     min-height: 120px;
@@ -54,7 +53,7 @@ body
 {  
     display: inline;
     float:left;
-    width:25%;
+    width: 25%;
     min-height: 200px;
 }
 
@@ -84,6 +83,23 @@ body
 #leftMenu .element a:active { color: #42575a; text-decoration:none; }
 #leftMenu .element a span { display: none; }
 
+#leftMenu #login
+{
+    background-color: #98abab;
+    cursor: pointer;
+}
+
+#leftMenu #login:hover 
+{
+    background: #606779;
+    color: #9ca6bf;
+}
+
+#leftMenu #login_form
+{
+    background: #82899b;
+    -moz-border-radius: 16px;
+}
 
 #content
 {

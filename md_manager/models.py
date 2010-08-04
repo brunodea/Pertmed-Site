@@ -7,6 +7,16 @@ class Doctor(models.Model):
     def __unicode__(self):
         return self.name
 
+    def sorted_itens_fields(self):
+        doc_itens = self.item_set.all()
+        doc_itens = sorted(doc_itens, key=lambda item: item.name)
+
+        doc_itens_fields = []
+        for item in doc_itens:  
+            doc_itens_fields.append((item, sorted(item.field_set.all(), key=lambda field: field.name)))
+
+        return doc_itens_fields
+
 class PhoneNumber(models.Model):
     doctor = models.ForeignKey(Doctor)
     region = models.CharField(max_length=2)
