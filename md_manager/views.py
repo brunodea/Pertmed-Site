@@ -106,6 +106,7 @@ def checkPhoneForm(request):
     """ Verifica se as informacoes sobre os telefones no formulario estao corretas 
         e retorna uma lista com os possiveis erros """
     error_messages = []
+    success_messages = []
 
     #Se tiver mais de 30 campos para telefones as verificacoes do excedente nao sao feitas.
     for i in range(0, 30):
@@ -119,10 +120,16 @@ def checkPhoneForm(request):
 
             elif len(request.POST[phn]) != 10:
                 error_messages.append((phn, 'Must be exact 10 digits.'))
+        
+            elif request.POST.values().count(request.POST[phn]) >= 2:
+                error_messages.append((phn, 'Phone number repeated.'))        
+            else:              
+                success_messages.append(phn)
+
         except KeyError:
             continue
 
-    return error_messages
+    return (error_messages, success_messages)
 
 def profile(request, object_id, template_name='md_manager/md_profile.html'):
     """ Mostra o perfil do medico e permite sua alteracao. """
@@ -132,12 +139,15 @@ def profile(request, object_id, template_name='md_manager/md_profile.html'):
     dic_form = {}
 
     phonef_error_messages = []  
-    phone_elems = []
+    phonef_success_messages = []
     
-    if request.method == 'POST':        
-        phonef_error_messages = checkPhoneForm(request)
+    if request.method == 'POST':   
+        messages =  checkPhoneForm(request)     
+        phonef_error_messages = messages[0]
+        phonef_success_messages = messages[1]
 
         new_request = {}
+        phone_elems = []
         
         for elem in request.POST:
             if not elem.startswith('Phone_'):
@@ -199,6 +209,7 @@ def profile(request, object_id, template_name='md_manager/md_profile.html'):
     return render_to_response(template_name, {'object': doctor, 'forms': forms, 'info_forms': info_forms,
                               'phone_forms': phone_forms, 'changed': changed,
                               'phoneform_errors': phonef_error_messages,
+                              'phoneform_success': phonef_success_messages,
                               'object_itens_fields': doc_itens_fields},
                               context_instance = RequestContext(request))
 

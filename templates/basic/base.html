@@ -4,36 +4,36 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel=Stylesheet href="/static/styles/base.css" type="text/css">
+
+<!-- DEPENDÊNCIAS -->
+
+{% block style %}
+    <link rel=Stylesheet href="/static/styles/base.css" type="text/css">
+{% endblock %}
+
 <script type="text/javascript" src="/static/JQuery/jquery.js"></script>
 <script type="text/javascript" src="/static/JQuery/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
 
 <script type="text/javascript" src="/static/JQuery/jquery.alerts-1.1/jquery.alerts.js"></script>
 <link href="/static/JQuery/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
 
-<style type="text/css">
-    {% block style %}
-    {% endblock %}
-</style>
+<!-- FIM DAS DEPENDÊNCIAS -->
 
 <title>{% block title %} Welcome! - PERTMED Project {% endblock %}</title>
 
-<script type="text/javascript">
-    {% block script %}{% endblock %}
-</script>
-
-<script type="text/javascript">
-    
-    jQuery(document).ready(function(){
-        $(".site_body #leftMenu #login_form").hide()
-    
-        $(".site_body #leftMenu #login").click(function(){    
-            $(this).next(".site_body #leftMenu #login_form").slideToggle("fast")
-              .siblings(".site_body #lleftMenu #login_form:visible").slideUp("fast");
+{% block script %}
+    <script type="text/javascript">
+        
+        jQuery(document).ready(function(){
+            $(".site_body #leftMenu #login_form").hide()
+        
+            $(".site_body #leftMenu #login").click(function(){    
+                $(this).next(".site_body #leftMenu #login_form").slideToggle("fast")
+                  .siblings(".site_body #lleftMenu #login_form:visible").slideUp("fast");
+            });
         });
-    });
-</script>
-
+    </script>
+{% endblock %}
 
 </head>
 
@@ -51,38 +51,38 @@
     
     <div class="site_body">
         <div id="leftMenu" align="center">
+            <div class="menu_title" align="center">
+                <strong>.:: MENU ::.</strong>
+            </div>   
+            <hr />
             {% block login %}
                 <div class="element" id="login">
                     Enter
                 </div>           
 
-                <div class="element" id="login_form">
+                <div class="element" id="login_form" style="cursor: default;">
                     <form action="/profile/1" method="GET">
-                        Login <input type="text" name="Login" value="Login" />
-                        Password <input type="password" name="Senha" value="Senha" />
-                        <input type="submit" value="Submit" />
+                        <strong>
+                        <table>
+                                <tr><td>Login</td><td><input type="text" name="Login" value="Login" size="9" /></td></tr>
+                                <tr><td>Password</td><td><input type="password" name="Senha" value="Senha" size="9" /></td></tr>
+                                <tr><td><a href="#">sing up</a></td><td><input type="submit" value="Submit" /></td></tr>
+                        </table>
+                        </strong>
                     </form> 
                 </div>
             {% endblock %}                
 
-            <div class="element">
-                <a href="/index/"> Home </a>
-            </div>
-            <div class="element">
-                <a href="#"> About </a>
-            </div>
-            <div class="element">
-                <a href="#"> Developers </a>
-            </div>
-            <div class="element">
-                <a href="#"> Contact </a>
-            </div>
-            <div class="element" border_bottom="none;">
+            <a href="/index/"><div class="element">Home</div></a>
+            <a href="#"><div class="element">About</div> </a>
+            <a href="#"><div class="element">Developers</div></a>
+            <a href="#"><div class="element">Contact</div></a>
+            <div class="element" border_bottom="none;" style="cursor: default;">
                 <a href="http://www.ufsm.br">
-                <img src="/static/images/logo_UFSM.gif" width="90" height="90" style="opacity:0.7;filter:alpha(opacity=70)"/>
+                <img src="/static/images/logo_UFSM.gif" width="90" height="90" style="opacity:0.7;filter:alpha(opacity=70)" />
                 </a>
-                <a href="http://www.inf.ufsm.br">
-                <img src="/static/images/logo_inf.jpeg" style="opacity:0.7;filter:alpha(opacity=70)"/>
+                <a href="http://www.inf.ufsm.br" >
+                <img src="/static/images/logo_inf.jpeg" width="66px" height="66px" style="opacity:0.7;filter:alpha(opacity=70)">
                 </a>
         
             </div>

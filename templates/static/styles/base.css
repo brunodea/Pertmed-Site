@@ -9,7 +9,7 @@ body
 
 #header
 {
-    -moz-border-radius: 16px 16px 0px 0px;
+    -moz-border-radius: 7px 7px 0px 0px;
     background-image: url("../images/header.jpeg");
     min-height: 120px;
     width: 99.9%;
@@ -29,12 +29,6 @@ body
     margin-right: 10px;
 }
 
-#header form
-{
-    color: #fff;
-    margin: 10px;
-}
-
 #header h5 a:link { color: #888f91; text-decoration:none; }
 #header h5 a:visited { color: #888f91; text-decoration:none; }
 #header h5 a:hover { color: #fff; text-decoration:none; }
@@ -42,7 +36,8 @@ body
 
 .site_body
 {
-    background: #d3d5d5;   
+    border-top: solid 1px #99bbdb;
+    background: #c4ced7;  
     width: 100%;
     float: left;
     min-height: 100px;
@@ -64,49 +59,66 @@ body
     margin: auto;
 }
 
+#leftMenu hr
+{
+    width: 90%;
+    color: #99bbdb;
+}
+
 #leftMenu .element
 {
-    width: 100%;
-    background: none;
+    width: 92%;
+    background: #7fa4c6;
     border-bottom: solid 1px #696d6d;
     padding: 5px;
 }
 
 #leftMenu .element:hover
 {
-    background: #c3c5c5;
+    background: #6a7279;
+    cursor: pointer;
+    color: #97bbdc
 }
 
-#leftMenu .element a:link { color: #42575a; text-decoration:none; }
-#leftMenu .element a:visited { color: #42575a; text-decoration:none; }
-#leftMenu .element a:hover { color: #f4f8f9; text-decoration:none; }
-#leftMenu .element a:active { color: #42575a; text-decoration:none; }
-#leftMenu .element a span { display: none; }
+#leftMenu a:link { color: #42575a; text-decoration:none; }
+#leftMenu a:visited { color: #42575a; text-decoration:none; }
+#leftMenu a:hover { color: #f4f8f9; text-decoration:none; }
+#leftMenu a:active { color: #42575a; text-decoration:none; }
 
 #leftMenu #login
 {
-    background-color: #98abab;
+    background: #7fa4c6;
+    color: #2a4157;
     cursor: pointer;
 }
 
 #leftMenu #login:hover 
 {
-    background: #606779;
-    color: #9ca6bf;
+    background: #6a7279;
+    color: #97bbdc;
 }
 
 #leftMenu #login_form
 {
-    background: #82899b;
-    -moz-border-radius: 16px;
+    background: #98abab;
+    color: #234646;
+}
+
+#leftMenu #login_form a { color: blue; }
+#leftMenu #login_form a:hover { color: #c2d9d9; }
+
+#leftMenu .menu_title
+{
+    background: #404d5a;    
+    color: #c0cbd5;
 }
 
 #content
 {
-    float:left;
+    float:right;
     width: 75%;
     background: #fff;
-    min-height: 300px;
+    min-height: 420px;
 }
 
 #footer

@@ -16,7 +16,6 @@ class ProfileForm(forms.Form):
                 pass
         except AttributeError:
             self.phone_list = []
-#        self.add_phoneNumber()
 
     def update_phoneNumbers(self):
         for i in range(0, len(self.phone_list)):

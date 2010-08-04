@@ -1,24 +1,77 @@
-body {
-	margin: 10px auto;
-	width: 470px;
+
+.accordion 
+{
+    width: 75%;
+    border: solid 1px #c4c4c4;
+    margin: auto;
+    margin-bottom: 5px;
 }
-h3 {
-	margin: 0;
-	padding: 0 0 .3em;
+
+.accordion .profile_item
+{
+    background: #e9e7e7 url(/static/images/arrow-square.gif) no-repeat right -51px;
+    margin: auto;
+    cursor: pointer;
+    border-bottom: solid 1px #c4c4c4;
 }
-p {
-	margin: 0;
-	padding: 0 0 .5em;
+
+.accordion .profile_item:hover 
+{
+    background-color: #e3e2e2;
 }
-.pane {
-	background: #edf5e1;
-	padding: 10px 20px 10px;
-	position: relative;
-	border-top: solid 2px #c4df9b;
+
+.accordion .profile_item.active 
+{
+    background-position: right 5px;
 }
-.pane .delete {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
+
+.accordion .profile_fields
+{
+    background: #f7f7f7;
+    margin: 0;
+    padding: 5px 1px 5px;
 }
+
+.accordion .profile_fields #pfs_field:hover
+{
+    background: #cfcfcf;
+}
+
+#profile_fields
+{
+    position: relative;
+    width: 50%;
+}
+
+#profile_fields #phone
+{
+    margin-left: 20px;
+    position: relative;
+    text-align: left;
+}
+
+#profile_fields #phone:hover
+{
+    background: #cfcfcf;
+}
+
+#profile_fields field_title
+{
+    margin-left: 10px;
+    font-size: 19px;
+    position: relative;
+    text-align: left;
+}
+
+.profile_change #form_table #delete_phone
+{
+    cursor: pointer;
+}
+
+.profile_change #add_phone
+{
+    color: blue;
+    cursor: pointer;
+}
+
+

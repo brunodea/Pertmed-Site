@@ -1,151 +1,64 @@
 {% extends "basic/base.html" %}
 
-<link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+{% block style %}
+    {{ block.super }}
+    <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
+{% endblock %}
 
 {% block title %} {{ object.name }} - Perfil {% endblock %}
 
-{% block style %}
-
-.accordion 
-{
-    width: 75%;
-    border: solid 1px #c4c4c4;
-    margin: auto;
-    margin-bottom: 5px;
-}
-
-.accordion .profile_item
-{
-    background: #e9e7e7 url(/static/images/arrow-square.gif) no-repeat right -51px;
-    margin: auto;
-    cursor: pointer;
-    border-bottom: solid 1px #c4c4c4;
-}
-
-.accordion .profile_item:hover 
-{
-    background-color: #e3e2e2;
-}
-
-.accordion .profile_item.active 
-{
-    background-position: right 5px;
-}
-
-.accordion .profile_fields
-{
-    background: #f7f7f7;
-    margin: 0;
-    padding: 5px 1px 5px;
-}
-
-.accordion .profile_fields #pfs_field:hover
-{
-    background: #cfcfcf;
-}
-
-#profile_fields
-{
-    position: relative;
-    width: 50%;
-}
-
-#profile_fields #phone
-{
-    margin-left: 20px;
-    position: relative;
-    text-align: left;
-}
-
-#profile_fields #phone:hover
-{
-    background: #cfcfcf;
-}
-
-#profile_fields field_title
-{
-    margin-left: 10px;
-    font-size: 19px;
-    position: relative;
-    text-align: left;
-}
-
-.profile_change #button_add_phone
-{
-    position: relative;
-    width: 16.5%;
-    margin-left: 83.5%;
-}
-
-.profile_change #form_table #delete_phone
-{
-    cursor: pointer;
-}
-
-.profile_change #add_phone
-{
-    color: blue;
-    cursor: pointer;
-}
-
-{% endblock %}
-
-
 {% block script %}
+    {{ block.super }}
+    <script type="text/javascript">
 
-    jQuery(document).ready(function(){
-        $(".accordion .profile_item:first").addClass("active");
-	    $(".accordion .profile_fields:not(:first)").hide();
+        jQuery(document).ready(function(){
+            $(".accordion .profile_item:first").addClass("active");
+	        $(".accordion .profile_fields:not(:first)").hide();
 
-	    $(".accordion .profile_item").click(function(){
-	      $(this).next(".profile_fields").slideToggle("slow")
-    	      .siblings(".profile_fields:visible").slideUp("slow");
-	      $(this).toggleClass("active");
-	      $(this).siblings(".profile_item").removeClass("active");
-	    });
-    });
+	        $(".accordion .profile_item").click(function(){
+	          $(this).next(".profile_fields").slideToggle("slow")
+        	      .siblings(".profile_fields:visible").slideUp("slow");
+	          $(this).toggleClass("active");
+	          $(this).siblings(".profile_item").removeClass("active");
+	        });
 
-    jQuery(document).ready(function(){
-        {% if not phoneform_errors %}
-            $(".profile_change").hide();
-        {% else %}
-            $(".profile").hide();
-        {% endif %}
+            {% if not phoneform_errors %}
+                $(".profile_change").hide();
+            {% else %}
+                $(".profile").hide();
+            {% endif %}
 
-        $(".profile .profile_change_button").click(function(){ 
-            $(".profile").hide();
-            $(".profile_change").show();
+            $(".profile .profile_change_button").click(function(){ 
+                $(".profile").hide();
+                $(".profile_change").show();
+            });
+
+            $(".profile_change #add_phone").click(function(){
+                var c = $(".profile_change #form_table tr:last").attr("id");
+                var strs = c.split("_",3);
+                c = parseInt(strs[1]) + 1;
+
+                $(".profile_change #form_table > table:last")
+                .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
+                    "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
+                    "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' /></td></tr>");
+
+            });
+
+            $(".profile_change #form_table #delete_phone").live('click', function(event) {
+                var c = $(".profile_change #form_table tr").length - 1;
+
+                if(c == 1) {
+                    jAlert("You must have at least one phone number.", "Alert");
+                } 
+                else {
+                    var id = $(this).parent().parent().attr("id");
+                    $(".profile_change #form_table #" + id).remove();
+                }
+            });
         });
-    });
 
-    jQuery(document).ready(function(){
-        $(".profile_change #add_phone").click(function(){
-            var c = $(".profile_change #form_table tr:last").attr("id");
-            var strs = c.split("_",3);
-            c = parseInt(strs[1]) + 1;
-
-            $(".profile_change #form_table > table:last")
-            .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
-                "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
-                "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' /></td></tr>");
-
-        });
-    });
-
-    jQuery(document).ready(function(){
-        $(".profile_change #form_table #delete_phone").live('click', function(event) {
-            var c = $(".profile_change #form_table tr").length - 1;
-
-            if(c == 1) {
-                jAlert("You must have at least one phone number.", "Alert");
-            } 
-            else {
-                var id = $(this).parent().parent().attr("id");
-                $(".profile_change #form_table #" + id).remove();
-            }
-        });
-    });
-
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -202,22 +115,22 @@
     </div>
 
     <div class="profile_change">
- 
-        {% if forms.errors %}
-            <p style="color: red;">
-                Please correct the error{{ forms.errors|pluralize }} below.
-            </p>
-        {% endif %}
 
         <form action="." method="POST">
         <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
         {% csrf_token %}
         <div id="form_table">
+
+            <h2 align="center"> Modify your profile </h2>
+            <div class="profile_done_button" align="right"><input type="submit" value="Done" /></div>
+            
+            <hr width="45%" align="right" />
+
+
             <table align="center" border="0">
             <!-- Renderiza o campo "Name" do formulário. -->
                 <tr>
                     <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
-                    <td><div class="profile_done_button"><input type="submit" value="Done" /></div></td>
                 </tr>    
 
             <!-- Renderiza os campos "Phone Number" do formulário. -->
@@ -225,21 +138,23 @@
                         {% if phone.errors %}
                            <tr id="{{phone.label}}_row"><td style="color: red;">{{ phone.errors }}</td></tr>
                         {% else %} 
-                            {% for label, error_msg in phoneform_errors %}
-                                {% if phone.label == label %}
-                                    <tr id="{{phone.label}}_row"><td style="color: red;">{{ error_msg }}</td></tr>
-                                {% endif %}
-                            {% endfor %}
+                            {% if not phone.label in phoneform_success %}
+                                {% for label, error_msg in phoneform_errors %}
+                                    {% if phone.label == label %}
+                                        <tr id="{{phone.label}}_row"><td style="color: red;">{{ error_msg }}</td></tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         {% endif %}
                     <tr id="{{phone.label}}_row">
                         <td>Phone Number:</td>
                         <td>{{ phone }}</td>
-                        <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" /></td>
+                        <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
                     </tr> 
                 {% endfor %}
             </table>
         </div>
-        <center><img id="add_phone" src="/static/images/add.png" alt="Add Phone"/></center>
+        <center><img id="add_phone" src="/static/images/add.png" alt="Add Phone" width="16px" height="16px"/></center>
 
         <h3> &nbsp;  Select the data you want to receive: </h3>
 
