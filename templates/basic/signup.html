@@ -1,0 +1,19 @@
+{% extends "basic/base.html" %}
+
+{% block content %}
+    <h2 align="center"> Sign Up </h2>
+    <hr />
+
+    <form action="." method="POST">
+    <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
+    {% csrf_token %}
+        <table>
+            {{ signup_form.as_table }}
+            <tr><td><input type="submit" value="Sign Up" /></td></tr>
+        </table>
+    </form>
+
+{% endblock %}
+
+
+

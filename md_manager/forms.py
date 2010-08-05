@@ -29,7 +29,15 @@ class ProfileForm(forms.Form):
         self.update_phoneNumbers()
 
     def __unicode__(self):
-        return "Profile Form"
+        return 'Profile Form'
+
+class SignupForm(forms.Form):
+    name  = forms.CharField(max_length=30, required=True, initial='Your Name', label='Name')
+    phone = forms.CharField(max_length=10, required=True, initial='Phone', label='Phone_Number')
+
+    def __unicode__(self):
+        return 'Signup Form'
+
 
 
 

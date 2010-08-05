@@ -1,5 +1,5 @@
 from pertmed_site.md_manager.models import Doctor, Item, Field, PhoneNumber
-from pertmed_site.md_manager.forms import ProfileForm
+from pertmed_site.md_manager.forms import ProfileForm, SignupForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
@@ -108,6 +108,9 @@ def checkPhoneForm(request):
     error_messages = []
     success_messages = []
 
+    if request.method != 'POST':
+        return (error_messages, success_messages)
+
     #Se tiver mais de 30 campos para telefones as verificacoes do excedente nao sao feitas.
     for i in range(0, 30):
         phn = 'Phone_' + str(i)
@@ -213,9 +216,53 @@ def profile(request, object_id, template_name='md_manager/md_profile.html'):
                               'object_itens_fields': doc_itens_fields},
                               context_instance = RequestContext(request))
 
+def signup_thanks(request):
+    return render_to_response("basic/signup_thanks.html")
 
-###################TODO CADASTRO DE NOVOS MEDICOS.####################################
 
+def signupPOSTHandler(post_request):
+    
+    doctor_name = name=post_request['name']
+
+    if doctor_name in [dname.name for dname in Doctor.objects.all()]:
+        return 'Name already registered!'
+
+    doctor = Doctor(name=doctor_name)
+    doctor.save()
+
+    phone_number = post_request['phone']
+    region = phone_number[:2] 
+    number = phone_number[2:]
+    phone = PhoneNumber(doctor=doctor, region=region, phone=number)
+
+    phone.save()
+
+    return doctor.id
+
+def signup(request, template_name='basic/signup.html'):
+    """ Lida com o cadastro de um usuario. """
+    
+    phonef_error_message = []
+    namef_error_message = []
+
+    if request.method == 'POST':
+        messages = checkPhoneForm(request)
+        try:
+            phonef_error_message = messages[0].pop()
+        except IndexError:
+            pass
+        signup_form = SignupForm(request.POST)
+
+        if not phonef_error_message and signup_form.is_valid():
+            namef_error_message = signupPOSTHandler(request.POST)
+    else:
+        signup_form = SignupForm()
+    
+
+    return render_to_response(template_name, {'signup_form': signup_form,
+                              'phoneform_error': phonef_error_message,
+                              'nameform_error': namef_error_message},
+                               context_instance = RequestContext(request))
 
 
 

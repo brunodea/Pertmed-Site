@@ -12,7 +12,7 @@
 {% endblock %}
 
 <script type="text/javascript" src="/static/JQuery/jquery.js"></script>
-<script type="text/javascript" src="/static/JQuery/jquery-ui-1.8.2.custom/js/jquery-ui-1.8.2.custom.min.js"></script>
+<script type="text/javascript" src="/static/JQuery/jquery-ui-1.8.2.custom.min.js"></script>
 
 <script type="text/javascript" src="/static/JQuery/jquery.alerts-1.1/jquery.alerts.js"></script>
 <link href="/static/JQuery/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
@@ -61,12 +61,12 @@
                 </div>           
 
                 <div class="element" id="login_form" style="cursor: default;">
-                    <form action="/profile/1" method="GET">
+                    <form action="/profile/1/" method="GET">
                         <strong>
                         <table>
                                 <tr><td>Login</td><td><input type="text" name="Login" value="Login" size="9" /></td></tr>
                                 <tr><td>Password</td><td><input type="password" name="Senha" value="Senha" size="9" /></td></tr>
-                                <tr><td><a href="#">sing up</a></td><td><input type="submit" value="Submit" /></td></tr>
+                                <tr><td><a href="/signup/">sing up</a></td><td><input type="submit" value="Submit" /></td></tr>
                         </table>
                         </strong>
                     </form> 
