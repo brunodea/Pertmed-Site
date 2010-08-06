@@ -1,16 +1,27 @@
 from pertmed_site.md_manager.models import Doctor, Item, Field, PhoneNumber
-from pertmed_site.md_manager.forms import ProfileForm, SignupForm
+from pertmed_site.md_manager.forms import ProfileForm, SignupForm, UserCreationFormExtended
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import auth
+
 from pertmed_site.md_manager.macros import informations          
 
 def index(request):
     """ For now, this is the index page of PERTMED's site. """
-    doctor = ''
-    if request.method == 'GET' and 'login' in request.GET:
-            doctor = Doctor.objects.get(name=request.GET['login'])
-    return render_to_response("basic/base.html", {'object': doctor})
+    user = request.user
+    if user.is_authenticated():
+        try:
+            doctor = Doctor.objects.get(name=user.get_full_name())
+        except Doctor.DoesNotExist:
+#            doctor = Doctor.objects.get(name__exact='Bruno')
+            pass
+    else:
+        doctor = []
+
+    return render_to_response("basic/base.html", {'object': user}, context_instance = RequestContext(request))
 
 def login(request):
     """ Login page maybe shouldn't be here... """
@@ -136,9 +147,14 @@ def checkPhoneForm(request):
 
     return (error_messages, success_messages)
 
-def profile(request, object_id, template_name='md_manager/md_profile.html'):
+@login_required
+def profile(request, template_name='md_manager/md_profile.html'):
     """ Mostra o perfil do medico e permite sua alteracao. """
-    doctor = get_object_or_404(Doctor, pk=object_id)
+    user = request.user
+
+    doctor =  user.doctor_set.get()
+    doctor = get_object_or_404(Doctor, pk=doctor.id)
+
     changed = False
 
     dic_form = {}
@@ -222,14 +238,14 @@ def signup_thanks(request):
     return render_to_response("basic/signup_thanks.html")
 
 
-def signupPOSTHandler(post_request):
+def registerPOSTHandler(post_request, new_user):
     
-    doctor_name = post_request['name']
+    doctor_name = new_user.get_full_name()#post_request['first_name'] + ' ' +  post_request['last_name']
 
     if doctor_name in [dname.name for dname in Doctor.objects.all()]:
         return ('Name already registered!', '')
 
-    doctor = Doctor(name=doctor_name)
+    doctor = Doctor(name=doctor_name, user=new_user)
     doctor.save()
 
     phone_number = post_request['phone']
@@ -241,7 +257,7 @@ def signupPOSTHandler(post_request):
 
     return ('', doctor)
 
-def signup(request, template_name='basic/signup.html'):
+def register(request, template_name='registration/register.html'):
     """ Lida com o cadastro de um usuario. """
     
     phonef_error_message = []
@@ -250,21 +266,26 @@ def signup(request, template_name='basic/signup.html'):
     new_doctor = []
 
     if request.method == 'POST':
-        phonef_error_message = phoneFormErrors('', request.POST['phone'])
-        signup_form = SignupForm(request.POST)
 
-        if not phonef_error_message and signup_form.is_valid():
-            infos = signupPOSTHandler(request.POST)
+        phonef_error_message = phoneFormErrors('', request.POST['phone'])
+
+        signup_form = SignupForm(request.POST)
+        regis_form = UserCreationFormExtended(request.POST)
+
+        if not phonef_error_message and signup_form.is_valid() and regis_form.is_valid():
+            new_user = regis_form.save(request.POST)
+            infos = registerPOSTHandler(request.POST, new_user)
             namef_error_message = infos[0]
             new_doctor = infos[1]
         elif phonef_error_message:
             phonef_error_message = phonef_error_message[1]
     else:
         signup_form = SignupForm()
-    
+        regis_form = UserCreationFormExtended()
 
     return render_to_response(template_name, {'object': new_doctor,
                               'signup_form': signup_form,
+                              'regis_form': regis_form,
                               'phoneform_error': phonef_error_message,
                               'nameform_error': namef_error_message},
                                context_instance = RequestContext(request))

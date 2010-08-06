@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.contrib.auth.views import login, logout
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -9,9 +10,11 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^index/$', 'pertmed_site.md_manager.views.index'),
     (r'^login/$', 'pertmed_site.md_manager.views.login'),
-    (r'^profile/(?P<object_id>\d+)/$', 'pertmed_site.md_manager.views.profile'),
-    (r'^signup/$', 'pertmed_site.md_manager.views.signup'),
-    (r'^signup/thanks $', 'pertmed_site.md_manager.views.signup_thanks'),
+    (r'^profile/$', 'pertmed_site.md_manager.views.profile'),
+    (r'^register/$', 'pertmed_site.md_manager.views.register'),
+#    (r'^signup/thanks $', 'pertmed_site.md_manager.views.signup_thanks'),
+    (r'^accounts/login/$', login),
+    (r'^accounts/logout/$', logout),
 
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^admin/', include(admin.site.urls)),

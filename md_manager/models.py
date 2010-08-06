@@ -1,7 +1,8 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Doctor(models.Model):
+    user = models.ForeignKey(User, unique=True)
     name = models.CharField(max_length=30)    
 
     def __unicode__(self):

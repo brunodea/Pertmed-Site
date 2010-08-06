@@ -23,6 +23,8 @@ class MDAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ['name']
 
+class UserAdmin(admin.ModelAdmin): pass
+
 
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Doctor, MDAdmin)

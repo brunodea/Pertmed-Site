@@ -1,0 +1,98 @@
+{% extends "basic/base.html" %}
+
+
+<script type="text/javascript">
+
+        jQuery(document).ready(function(){
+            $(".signup form table tr td#phone_form").numeric();
+        });
+</script>
+
+<style type="text/css">
+
+p .error
+{
+    color: red;
+}
+
+</style>
+
+{% block content %}
+    {% if not object %}
+        <div class="signup">
+            <h2 align="center"> Create an account </h2>
+            <hr />
+
+            {% if regis_form.error_dict %}
+                <p class="error">Please correct the errors below.</p>
+            {% endif %}
+
+            <form action="." method="POST">
+            <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
+            {% csrf_token %}
+                <table>
+
+                    <tr>
+                        <td><label for="id_username">Username:</label></td><td> {{ regis_form.username }}</td>
+                        {% if regis_form.username.errors %}
+                           <td style="color: red;">{{ regis_form.username.errors }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><label for="id_password1">Password:</label></td><td> {{ regis_form.password1 }}</td>
+                        {% if regis_form.password1.errors %}
+                            <td style="color: red;">{{ regis_form.password1.errors }}</td>
+                        {% endif %}
+
+                    </tr>
+                    <tr>
+                        <td><label for="id_password2">Password (again):</label></td><td> {{ regis_form.password2 }}</td>
+                        {% if regis_form.password2.errors %}
+                            <td style="color: red;">{{ regis_form.password2.errors }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><label for="id_email">Email:</label></td><td>{{ regis_form.email }}</td>
+                        {% if regis_form.email.errors %}
+                            <td style="color: red;">{{ regis_form.email.errors }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>                    
+                        <td><label for="id_first_name">First Name:</label></td><td>{{ regis_form.first_name }}</td>
+                        {% if regis_form.first_name.errors %}
+                            <tr><td style="color: red;">{{ regis_form.first_name.errors }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td><label for="id_last_name">Last Name:</label></td><td>{{ regis_form.last_name }}</td>
+                        {% if regis_form.last_name.errors %}
+                            <td style="color: red;">{{ regis_form.last_name.errors }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Phone Number: </td><td id="phone_form">{{ signup_form.phone }}</td>
+                        {% if phoneform_error %}
+                            <td style="color: red;">{{phoneform_error}}</td>
+                        {% endif %}               
+                    </tr>
+
+                    <tr><td><input type="submit" value="Create the account" /></tr></td>
+                </table>
+            </form>
+        </div>
+    {% else %}
+        <div class="thanks">
+            <h2 align="center">Thanks for registering!</h2>
+
+            <hr />
+
+            <form action="/profile/" method="GET">
+                <center><a href="/accounts/login/">Go to login page.</a></center>
+            </form>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+
+

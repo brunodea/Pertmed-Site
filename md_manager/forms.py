@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from macros import informations
 
 class ProfileForm(forms.Form):
@@ -32,13 +34,22 @@ class ProfileForm(forms.Form):
         return 'Profile Form'
 
 class SignupForm(forms.Form):
-    name  = forms.CharField(max_length=30, required=True, initial='Your Name', label='Name')
-    phone = forms.CharField(max_length=10, required=True, initial='Phone', label='Phone')
+    name  = forms.CharField(max_length=30, required=False, initial='Your Name', label='Name')
+    phone = forms.CharField(max_length=10, required=True, initial='', label='Phone')
 
     def __unicode__(self):
         return 'Signup Form'
 
+class UserCreationFormExtended(UserCreationForm): 
+    def __init__(self, *args, **kwargs): 
+        super(UserCreationFormExtended, self).__init__(*args, **kwargs) 
+        self.fields['first_name'].required = True 
+        self.fields['last_name'].required = True 
+        self.fields['email'].required = True
 
+    class Meta: 
+        model = User 
+        fields = ('username', 'email', 'first_name', 'last_name') 
 
 
 
