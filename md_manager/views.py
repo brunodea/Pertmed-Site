@@ -7,7 +7,10 @@ from pertmed_site.md_manager.macros import informations
 
 def index(request):
     """ For now, this is the index page of PERTMED's site. """
-    return render_to_response("basic/base.html")
+    doctor = ''
+    if request.method == 'GET' and 'login' in request.GET:
+            doctor = Doctor.objects.get(name=request.GET['login'])
+    return render_to_response("basic/base.html", {'object': doctor})
 
 def login(request):
     """ Login page maybe shouldn't be here... """
@@ -17,13 +20,8 @@ def profilePOSTHandler(request, doctor, forms):
     """ Lida com as informacoes do request.POST enviadas via formulario 
         do perfil do usuario """
 
-    new_request = {}
-    #copia os elementos do dicionario(imutavel) request.POST para um dicionario
-    #mutavel.
-    new_request = request.POST.copy()
-
     #Salva o novo nome do medico.
-    doctor.name = new_request['name']
+    doctor.name = request.POST['name']
     doctor.save()  
 
     #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
@@ -37,9 +35,7 @@ def profilePOSTHandler(request, doctor, forms):
             #(para evitar duplicacoes e aumentar levemente a velocidade do algoritmo). Se nao,
             #este campo eh deletado do Banco de Dados, pois pressupoe-se que o 
             #medico tenha desmarcado esta opcao no formulario.
-            try:
-                del new_request[f]
-            except KeyError:
+            if not f in request.POST:
                 field.delete()
 
         if not item.field_set.all():
@@ -49,25 +45,22 @@ def profilePOSTHandler(request, doctor, forms):
 
     phone_number = ''
 
-    #remove do dicionario "new_request" os formularios cujo numero do telefone
-    #ja esteja no BD com o medico (Evitando duplicacoes).
-    #E caso o telefone ja estava no BD soh que nao esta no "new_request", significa
+    #caso o telefone ja estava no BD soh que nao esta no "new_request", significa
     #que ele foi deletado. Entao, ele eh deletado do BD.
 
     for phone in doc_phones:
         phone_number = phone.region + phone.phone
         deleted_phone = True
 
-        for elem in new_request:
-            if elem.startswith('Phone_') and phone_number == new_request[elem]:
-                del new_request[elem] 
+        for elem in request.POST:
+            if elem.startswith('Phone_') and phone_number == request.POST[elem]:
                 deleted_phone = False
                 break
         if deleted_phone:
             phone.delete()
 
     #Adiciona ao BD as informacoes adicionadas pelo medico.
-    for elem in new_request:
+    for elem in request.POST:
         part = elem.partition('_')
         #Faz a lida com os itens e campos.
         if part[2] and part[0] != 'Phone':
@@ -90,7 +83,7 @@ def profilePOSTHandler(request, doctor, forms):
                     doc_item[0].save()
         #Faz a lida com os numeros de telefone.
         elif part[0] == 'Phone':
-            phone = new_request[elem]
+            phone = request.POST[elem]
 
             region = phone[:2]
             number = phone[2:]
@@ -101,6 +94,22 @@ def profilePOSTHandler(request, doctor, forms):
                 new_phone.save()
                 doctor.phonenumber_set.add(new_phone)
                 doctor.save()
+
+def phoneFormErrors(label, phone_number):
+
+    error_message = ''    
+
+    if phone_number == '':
+        error_message = (label, 'Can\'t be empty.')
+
+    elif not phone_number.isdigit():
+        error_message = (label, 'Please, only digits.')
+
+    elif len(phone_number) != 10:
+        error_message = (label, 'Must be exact 10 digits.')
+  
+    return error_message
+
 
 def checkPhoneForm(request):
     """ Verifica se as informacoes sobre os telefones no formulario estao corretas 
@@ -115,19 +124,12 @@ def checkPhoneForm(request):
     for i in range(0, 30):
         phn = 'Phone_' + str(i)
         try:
-            if request.POST[phn] == '':
-                error_messages.append((phn, 'Can\'t be empty.'))
+            message = phoneFormErrors(phn, request.POST[phn])
+            if message:
+                error_messages.append(message)
 
-            elif not request.POST[phn].isdigit():
-                error_messages.append((phn, 'Please, only digits.'))
-
-            elif len(request.POST[phn]) != 10:
-                error_messages.append((phn, 'Must be exact 10 digits.'))
-        
             elif request.POST.values().count(request.POST[phn]) >= 2:
-                error_messages.append((phn, 'Phone number repeated.'))        
-            else:              
-                success_messages.append(phn)
+                error_messages.append((phn, 'Phone number repeated.'))   
 
         except KeyError:
             continue
@@ -222,10 +224,10 @@ def signup_thanks(request):
 
 def signupPOSTHandler(post_request):
     
-    doctor_name = name=post_request['name']
+    doctor_name = post_request['name']
 
     if doctor_name in [dname.name for dname in Doctor.objects.all()]:
-        return 'Name already registered!'
+        return ('Name already registered!', '')
 
     doctor = Doctor(name=doctor_name)
     doctor.save()
@@ -237,7 +239,7 @@ def signupPOSTHandler(post_request):
 
     phone.save()
 
-    return doctor.id
+    return ('', doctor)
 
 def signup(request, template_name='basic/signup.html'):
     """ Lida com o cadastro de um usuario. """
@@ -245,21 +247,24 @@ def signup(request, template_name='basic/signup.html'):
     phonef_error_message = []
     namef_error_message = []
 
+    new_doctor = []
+
     if request.method == 'POST':
-        messages = checkPhoneForm(request)
-        try:
-            phonef_error_message = messages[0].pop()
-        except IndexError:
-            pass
+        phonef_error_message = phoneFormErrors('', request.POST['phone'])
         signup_form = SignupForm(request.POST)
 
         if not phonef_error_message and signup_form.is_valid():
-            namef_error_message = signupPOSTHandler(request.POST)
+            infos = signupPOSTHandler(request.POST)
+            namef_error_message = infos[0]
+            new_doctor = infos[1]
+        elif phonef_error_message:
+            phonef_error_message = phonef_error_message[1]
     else:
         signup_form = SignupForm()
     
 
-    return render_to_response(template_name, {'signup_form': signup_form,
+    return render_to_response(template_name, {'object': new_doctor,
+                              'signup_form': signup_form,
                               'phoneform_error': phonef_error_message,
                               'nameform_error': namef_error_message},
                                context_instance = RequestContext(request))

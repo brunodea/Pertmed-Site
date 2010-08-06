@@ -47,7 +47,7 @@ body
 #leftMenu
 {  
     display: inline;
-    float:left;
+    float: left;
     width: 25%;
     min-height: 200px;
 }

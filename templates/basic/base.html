@@ -13,6 +13,9 @@
 
 <script type="text/javascript" src="/static/JQuery/jquery.js"></script>
 <script type="text/javascript" src="/static/JQuery/jquery-ui-1.8.2.custom.min.js"></script>
+<script type="text/javascript" src="/static/JQuery/jquery.checkboxes.js"></script>
+<script type="text/javascript" src="/static/JQuery/jquery.numeric.js"></script>
+
 
 <script type="text/javascript" src="/static/JQuery/jquery.alerts-1.1/jquery.alerts.js"></script>
 <link href="/static/JQuery/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
@@ -60,17 +63,37 @@
                     Enter
                 </div>           
 
-                <div class="element" id="login_form" style="cursor: default;">
-                    <form action="/profile/1/" method="GET">
-                        <strong>
-                        <table>
-                                <tr><td>Login</td><td><input type="text" name="Login" value="Login" size="9" /></td></tr>
-                                <tr><td>Password</td><td><input type="password" name="Senha" value="Senha" size="9" /></td></tr>
-                                <tr><td><a href="/signup/">sing up</a></td><td><input type="submit" value="Submit" /></td></tr>
-                        </table>
-                        </strong>
-                    </form> 
-                </div>
+                {% if not object %}
+                    <div class="element" id="login_form" style="cursor: default;">
+                        <form action="." method="GET">
+                            <strong>
+                            <table>
+                                    <tr><td>Login</td><td><input type="text" name="login" value="Login" size="9" /></td></tr>
+                                    <tr><td>Password</td><td><input type="password" name="Senha" value="Senha" size="9" /></td></tr>
+                                    <tr><td><a href="/signup/">sing up</a></td><td><input type="submit" value="Submit" /></td></tr>
+                            </table>
+                            </strong>
+                        </form> 
+                    </div>
+                 {% else %}
+                    <div class="element" id="login_form" style="cursor: default;">
+                            <div id="hello" style="border-bottom: solid 1px #676b6f; width:100%">
+                                Hello, <br>
+                                <center>Dr. <strong>{{ object.name }}</strong>
+                            </div>  
+                            <div id="hellooptions">
+                                <table><tr>
+                                    <td align="left"><a href="#">logout</a></td>
+                                    <td align="right">
+                                        <form action="/profile/{{ object.id }}/" method="GET">
+                                            <input type="submit" value="Profile" style="cursor: pointer;" />
+                                        </form> 
+                                    </td>
+                                </tr></table>
+                            </div>
+                    </div>
+                {% endif %}
+
             {% endblock %}                
 
             <a href="/index/"><div class="element">Home</div></a>

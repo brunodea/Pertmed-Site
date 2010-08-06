@@ -1,5 +1,6 @@
 {% extends "basic/base.html" %}
 
+
 {% block style %}
     {{ block.super }}
     <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
@@ -27,11 +28,30 @@
             {% else %}
                 $(".profile").hide();
             {% endif %}
+            
+            $("td#phone_text").numeric();
 
             $(".profile .profile_change_button").click(function(){ 
                 $(".profile").hide();
                 $(".profile_change").show();
             });
+
+            $(".profile_change form#profileform #checkAll").click(function(){
+                var item = $(this).attr("name").split("_")[0]
+                if($(this).attr("checked") == true) {
+                    $(".profile_change #profileform .profile_fields#"+item+"_fields").checkCheckboxes();
+                }
+                else {
+                    $(".profile_change #profileform .profile_fields#"+item+"_fields").unCheckCheckboxes();
+                }
+
+            });
+
+            $(".profile_change form#profileform .accordion .profile_fields td#info").click(function(){
+                var item = $(this).parent().parent().parent().parent().attr("id").split("_")[0]
+                $(".profile_change form#profileform #checkAll[name="+item+"_checkAll]").attr("checked", false);
+            });
+
 
             $(".profile_change #add_phone").click(function(){
                 var c = $(".profile_change #form_table tr:last").attr("id");
@@ -41,9 +61,9 @@
                 $(".profile_change #form_table > table:last")
                 .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
                     "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
-                    "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' /></td></tr>");
+                    "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
 
-            });
+            });            
 
             $(".profile_change #form_table #delete_phone").live('click', function(event) {
                 var c = $(".profile_change #form_table tr").length - 1;
@@ -58,6 +78,7 @@
             });
         });
 
+        
     </script>
 {% endblock %}
 
@@ -100,7 +121,7 @@
   
         <div class="accordion">
             {% for item, fields in object_itens_fields %}
-                <div class="profile_item">
+                <div class="profile_item" style="width:100%;">
                     <strong>{{ item.name }}</strong>
                 </div>
                 <div class="profile_fields">
@@ -116,7 +137,7 @@
 
     <div class="profile_change">
 
-        <form action="." method="POST">
+        <form id="profileform" action="." method="POST">
         <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
         {% csrf_token %}
         <div id="form_table">
@@ -148,7 +169,7 @@
                         {% endif %}
                     <tr id="{{phone.label}}_row">
                         <td>Phone Number:</td>
-                        <td>{{ phone }}</td>
+                        <td id="phone_text">{{ phone }}</td>
                         <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
                     </tr> 
                 {% endfor %}
@@ -161,20 +182,20 @@
         <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
         <div class="accordion">
             {% for item, fields in info_forms %}
-                <div class="profile_item">
+                <div class="profile_item" id="profile_checkAll">
+                    <input type="checkbox" id="checkAll" name="{{item}}_checkAll"/>
                     <strong> {{ item }} </strong>
-                </div>
+                </div>       
 
-                <div class="profile_fields">
-                <table align="center">
-                {% for label, info in fields %}
-                    <tr><td> {{ label }}: </td><td> {{ info }} </td></tr>
-                {% endfor %}
-                </table>
+                <div class="profile_fields" id="{{item}}_fields">
+                    <table align="center" id="testetabela">
+                    {% for label, info in fields %}
+                        <tr><td> {{ label }}: </td><td id="info">{{ info }}</td></tr>
+                    {% endfor %}
+                    </table>
                 </div>
             {% endfor %}
         </div>
-
         </form>
     </div>
 
