@@ -1,39 +1,44 @@
+# Lida com os templates e seus formularios.
+
+
+######## Importacoes necessarias #############
+
 from pertmed_site.md_manager.models import Doctor, Item, Field, PhoneNumber
+from pertmed_site.md_manager.macros import informations, info_itens    
 from pertmed_site.md_manager.forms import ProfileForm, SignupForm, UserCreationFormExtended
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import auth
 
-from pertmed_site.md_manager.macros import informations          
+##############################################
+
 
 def index(request):
-    """ For now, this is the index page of PERTMED's site. """
+    """ Renderiza a pagina inicial do site. """
+
+    #Se o usuario estiver logado, ao inves de aparecer a opcao de login no menu,
+    #seu nome eh mostrado.
     user = request.user
     if user.is_authenticated():
         try:
             doctor = Doctor.objects.get(name=user.get_full_name())
         except Doctor.DoesNotExist:
-#            doctor = Doctor.objects.get(name__exact='Bruno')
             pass
     else:
         doctor = []
 
     return render_to_response("basic/base.html", {'object': user}, context_instance = RequestContext(request))
 
-def login(request):
-    """ Login page maybe shouldn't be here... """
-    return HttpResponse("Login Page!")
-
 def profilePOSTHandler(request, doctor, forms):
     """ Lida com as informacoes do request.POST enviadas via formulario 
-        do perfil do usuario """
-
-    #Salva o novo nome do medico.
-    doctor.name = request.POST['name']
-    doctor.save()  
+        para alteracao do perfil do usuario """
+    user = request.user
+    user.first_name = request.POST['first_name'] 
+    user.last_name  = request.POST['last_name']
+    user.email = request.POST['email']
+    user.save() #salva os novos nome e email do usuario.
 
     #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
     #pelo medico.
@@ -41,14 +46,10 @@ def profilePOSTHandler(request, doctor, forms):
     for item in doc_itens:  
         for field in item.field_set.all():
             f = field.name + '_' + item.name
-            #caso o campo em questao esteja marcado no formulario e como medico ja 
-            #tinha previamente ele, este campo eh deletado do dicionario
-            #(para evitar duplicacoes e aumentar levemente a velocidade do algoritmo). Se nao,
-            #este campo eh deletado do Banco de Dados, pois pressupoe-se que o 
-            #medico tenha desmarcado esta opcao no formulario.
+            #caso o campo 'f' nao esteja marcado no formulario, ele eh deletado do BD.
             if not f in request.POST:
                 field.delete()
-
+        #caso o item em questao nao tenha nenhum campo associado a ele, este eh deletado.
         if not item.field_set.all():
             item.delete()
 
@@ -56,9 +57,8 @@ def profilePOSTHandler(request, doctor, forms):
 
     phone_number = ''
 
-    #caso o telefone ja estava no BD soh que nao esta no "new_request", significa
-    #que ele foi deletado. Entao, ele eh deletado do BD.
-
+    #caso o telefone em questao nao esta presente no request, significa que ele
+    #foi descartado pelo medico, entao eh deletado do BD.
     for phone in doc_phones:
         phone_number = phone.region + phone.phone
         deleted_phone = True
@@ -73,8 +73,9 @@ def profilePOSTHandler(request, doctor, forms):
     #Adiciona ao BD as informacoes adicionadas pelo medico.
     for elem in request.POST:
         part = elem.partition('_')
-        #Faz a lida com os itens e campos.
-        if part[2] and part[0] != 'Phone':
+        #se o terceiro elemento da tripla "part" existir e constar na lista
+        #de 'itens' do CCR, significa que se trata de um 'field'.
+        if part[2] and part[2] in info_itens:
             doc_item = doctor.item_set.filter(name=part[2])
             if not doc_item:
                 item = Item(name=part[2], doctor=doctor)
@@ -92,10 +93,13 @@ def profilePOSTHandler(request, doctor, forms):
                     field.save()
                     doc_item[0].field_set.add(field)
                     doc_item[0].save()
-        #Faz a lida com os numeros de telefone.
+        #Se o primeiro elemento da tripla 'part' for "Phone", significa que se trata
+        #de um telefone.
         elif part[0] == 'Phone':
             phone = request.POST[elem]
 
+            #como o telefone passado eh um numero de 10digitos, os dois primeiros
+            #representam o numero da regiao e o resto o numero do telefone propriamente dito.
             region = phone[:2]
             number = phone[2:]
 
@@ -107,7 +111,11 @@ def profilePOSTHandler(request, doctor, forms):
                 doctor.save()
 
 def phoneFormErrors(label, phone_number):
-
+    """ Realiza alguns testes verificando se o campo do formulario de um telefone
+        nao contem erros. Erros possiveis:
+        1)Ser vazio; 2)Nao conter apenas numeros e 3)Ter um numero de digitos diferente de 10.
+        Se tudo estiver certo, uma string vazia eh retornada. Se nao, uma tupla com o rotulo daquele
+        campo do formulario e a mensagem de erro eh retornada."""
     error_message = ''    
 
     if phone_number == '':
@@ -147,42 +155,64 @@ def checkPhoneForm(request):
 
     return (error_messages, success_messages)
 
+def verifyNameAndEmail(email, name):
+    """ Verifica se o nome e email passados como parametro ja existem no BD.
+        Retorna uma tupla com o nome do campo incorreto e a mensagem do erro. """
+
+    error = ''
+    if email in [umails.email for umails in User.objects.all()]:
+        error = ('email', 'Email already registered.')
+
+    elif name in [dname.name for dname in Doctor.objects.all()]:
+        error = ('name', 'Name already registered.')
+
+    return error
+
 @login_required
 def profile(request, template_name='md_manager/md_profile.html'):
     """ Mostra o perfil do medico e permite sua alteracao. """
     user = request.user
-
+  
     doctor =  user.doctor_set.get()
     doctor = get_object_or_404(Doctor, pk=doctor.id)
 
     changed = False
 
-    dic_form = {}
-
-    phonef_error_messages = []  
+    dic_form                = {}
+    name_email_error        = []
+    phonef_error_messages   = []  
     phonef_success_messages = []
     
     if request.method == 'POST':   
-        messages =  checkPhoneForm(request)     
+        messages = checkPhoneForm(request)     
         phonef_error_messages = messages[0]
         phonef_success_messages = messages[1]
 
         new_request = {}
         phone_elems = []
         
+        #gera uma lista de tuplas com o numero do telefone e o valor da label que o identifica.
+        #Os elementos que vao para essa lista nao sao adicionados ao new_request.
         for elem in request.POST:
             if not elem.startswith('Phone_'):
                 new_request[elem] = request.POST[elem]
             else:
                 phone_elems.append((request.POST[elem], int(elem.partition('_')[2])))
 
+        #essa lista eh entao ordenada de acordo com o valor do seguno elemento das tuplas.
         phone_elems = sorted(phone_elems, key=lambda e: e[1])
+        #entao os elementos ordenados dessa lista sao adicionados ao new_request,
+        #com seu label modificado para a sua posicao na lista.
         for i in range(0, len(phone_elems)):
             new_request['Phone_' + str(i)] = phone_elems[i][0]
              
         forms = ProfileForm(new_request)
 
-        if not phonef_error_messages and forms.is_valid():
+        if not request.POST['first_name'] + ' ' + request.POST['last_name'] == request.user.get_full_name() or not request.POST['email'] == request.user.email:
+            name_email_error = verifyNameAndEmail(request.POST, request.POST['email'],
+                request.POST['first_name'] + ' ' + request.POST['last_name']) 
+
+        if not phonef_error_messages and not name_email_error and forms.is_valid():
             profilePOSTHandler(request, doctor, forms)
             changed = True
     else:
@@ -226,24 +256,21 @@ def profile(request, template_name='md_manager/md_profile.html'):
 
     for phonef in forms.phone_list:
         phone_forms.append(forms[phonef.label])
+    
+    user_form = UserCreationFormExtended(
+        {'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name})
 
     return render_to_response(template_name, {'object': doctor, 'forms': forms, 'info_forms': info_forms,
                               'phone_forms': phone_forms, 'changed': changed,
                               'phoneform_errors': phonef_error_messages,
                               'phoneform_success': phonef_success_messages,
-                              'object_itens_fields': doc_itens_fields},
+                              'object_itens_fields': doc_itens_fields, 'user_form': user_form,
+                              'name_email_error': name_email_error},
                               context_instance = RequestContext(request))
-
-def signup_thanks(request):
-    return render_to_response("basic/signup_thanks.html")
-
 
 def registerPOSTHandler(post_request, new_user):
     
-    doctor_name = new_user.get_full_name()#post_request['first_name'] + ' ' +  post_request['last_name']
-
-    if doctor_name in [dname.name for dname in Doctor.objects.all()]:
-        return ('Name already registered!', '')
+    doctor_name = post_request['first_name'] + ' ' + post_request['last_name']
 
     doctor = Doctor(name=doctor_name, user=new_user)
     doctor.save()
@@ -251,19 +278,19 @@ def registerPOSTHandler(post_request, new_user):
     phone_number = post_request['phone']
     region = phone_number[:2] 
     number = phone_number[2:]
-    phone = PhoneNumber(doctor=doctor, region=region, phone=number)
+    phone  = PhoneNumber(doctor=doctor, region=region, phone=number)
 
     phone.save()
 
-    return ('', doctor)
+    return doctor
 
 def register(request, template_name='registration/register.html'):
     """ Lida com o cadastro de um usuario. """
     
     phonef_error_message = []
-    namef_error_message = []
-
-    new_doctor = []
+    namef_error_message  = []
+    new_doctor           = []
+    regist_form_errors   = []
 
     if request.method == 'POST':
 
@@ -272,11 +299,14 @@ def register(request, template_name='registration/register.html'):
         signup_form = SignupForm(request.POST)
         regis_form = UserCreationFormExtended(request.POST)
 
-        if not phonef_error_message and signup_form.is_valid() and regis_form.is_valid():
+        regist_form_errors = verifyNameAndEmail(request.POST, request.POST['email'],
+            request.POST['first_name'] + ' ' + request.POST['last_name'])
+
+        if not phonef_error_message and not regist_form_errors and signup_form.is_valid() and regis_form.is_valid():
+           
             new_user = regis_form.save(request.POST)
-            infos = registerPOSTHandler(request.POST, new_user)
-            namef_error_message = infos[0]
-            new_doctor = infos[1]
+            new_doctor = registerPOSTHandler(request.POST, new_user)
+
         elif phonef_error_message:
             phonef_error_message = phonef_error_message[1]
     else:
@@ -286,8 +316,9 @@ def register(request, template_name='registration/register.html'):
     return render_to_response(template_name, {'object': new_doctor,
                               'signup_form': signup_form,
                               'regis_form': regis_form,
+                              'regist_form_error': regist_form_errors,
                               'phoneform_error': phonef_error_message,
-                              'nameform_error': namef_error_message},
+                              'regist_form_errors': regist_form_errors},
                                context_instance = RequestContext(request))
 
 

@@ -1,3 +1,5 @@
+#Listas com as informacoes do CCR.
+
 info_itens = ['Alerts', 'Comment', 'Immunization', 'Medication', 'Person', 'Problem',
               'Procedure', 'Result', 'SocialHistory']
 info_fields = [["Name", 

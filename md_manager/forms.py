@@ -4,8 +4,6 @@ from django.contrib.auth.forms import UserCreationForm
 from macros import informations
 
 class ProfileForm(forms.Form):
-    name = forms.CharField(max_length=30)
-
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
 

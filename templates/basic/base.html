@@ -65,37 +65,6 @@
                         <a href="/accounts/login">Login</a>
                         (<a href="/register/">register</a>)
                     </div>  
-<!--
-                    <div class="element" id="login_form" style="cursor: default;">
-                        <form action="." method="POST">
-                        {% csrf_token %}
-                            <strong>
-                            <table>
-                                <tr>
-                                    {% if form.errors %}
-                                        <p class="error" style="color: red;">Not Valid.</p>
-                                    {% endif %}
-                                </tr>
-                                <tr>
-                                    <td><label for="username">User:</label></td>
-                                    <td><input type="text" name="username" value="" id="username" size="9"/></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="password">Password:</label></td>
-                                    <td><input type="password" name="password" value="" id="password" size="9" /></td>
-                                </tr>   
-                                <tr>
-                                    <td><a href="/signup/">sing up</a></td>
-                                    <td align="right"><input type="submit" value="login" /></td>
-                                    <input type="hidden" name="next" value="/index/" />     
-                                </tr>
-                            </table>
-                            </strong>
-                        <form action="." method="POST">
-                            {% csrf_token %}
-
-                    </div>
--->
                  {% else %}
                     <div class="element" id="login" style="background: #5d82a4;">
                         Dr. <strong>{{ user.doctor_set.get.name }}</strong>
@@ -113,7 +82,6 @@
 
             <a href="/index/"><div class="element">Home</div></a>
             <a href="#"><div class="element">About</div> </a>
-            <a href="#"><div class="element">Developers</div></a>
             <a href="#"><div class="element">Contact</div></a>
             <div class="element" border_bottom="none;" style="cursor: default;">
                 <a href="http://www.ufsm.br">
@@ -135,10 +103,8 @@
         </div>
     </div>
 
-    <div id="footer">
+    <div id="footer"> <br />
         GMOB - Grupo de Sistemas de Computa&ccedil;&atilde;o M&oacute;vel - 2010
-        <br>
-        Bruno Romero de Azevedo - Hugo S. P.
     </div>
 </body>
 </html>

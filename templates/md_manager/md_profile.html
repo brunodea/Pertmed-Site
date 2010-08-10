@@ -17,10 +17,10 @@
 	        $(".accordion .profile_fields:not(:first)").hide();
 
 	        $(".accordion .profile_item").click(function(){
-	          $(this).next(".profile_fields").slideToggle("slow")
-        	      .siblings(".profile_fields:visible").slideUp("slow");
-	          $(this).toggleClass("active");
-	          $(this).siblings(".profile_item").removeClass("active");
+                $(this).next(".profile_fields").slideToggle("slow")
+                  .siblings(".profile_fields:visible").slideUp("slow");
+                $(this).toggleClass("active");
+                $(this).siblings(".profile_item").removeClass("active");
 	        });
 
             {% if not phoneform_errors %}
@@ -44,7 +44,6 @@
                 else {
                     $(".profile_change #profileform .profile_fields#"+item+"_fields").unCheckCheckboxes();
                 }
-
             });
 
             $(".profile_change form#profileform .accordion .profile_fields td#info").click(function(){
@@ -149,10 +148,36 @@
 
 
             <table align="center" border="0">
-            <!-- Renderiza o campo "Name" do formulário. -->
+            <!-- Renderiza o campo "Name" do formulário. --> 
+                <tr>            
+                    <td><label for="id_first_name">First Name:</label></td><td>{{ user_form.first_name }}</td>
+                    {% if user_form.first_name.errors %}
+                        <tr><td style="color: red;">{{ user_form.first_name.errors }}</td>
+                    {% else %}
+                        {% if name_email_error.0 == 'name' %}
+                            <td style="color: red;">{{ name_email_error.1 }}</td>
+                        {% endif %}
+                    {% endif %}
+                </tr>
                 <tr>
-                    <td>{{ forms.name.label }}:</td><td>{{ forms.name }}</td>
-                </tr>    
+                    <td><label for="id_last_name">Last Name:</label></td><td>{{ user_form.last_name }}</td>
+                    {% if user_form.last_name.errors %}
+                        <td style="color: red;">{{ user_form.last_name.errors }}</td>
+                    {% endif %}
+                </tr>
+
+                <tr>
+                    <td><label for="id_email">Email:</label></td><td>{{ user_form.email }}</td>
+                    {% if user_form.email.errors %}
+                        <td style="color: red;">{{ user_form.email.errors }}</td>                    
+                    {% else %}
+                        {% if name_email_error.0 == 'email' %}
+                            <td style="color: red;">{{ name_email_error.1 }}</td>
+                        {% endif %}
+                    {% endif %}
+                </tr>       
+
+                <th colspan="2" align="center">Phone Numbers:</th>
 
             <!-- Renderiza os campos "Phone Number" do formulário. -->
                 {% for phone in phone_forms %}
@@ -182,13 +207,15 @@
         <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
         <div class="accordion">
             {% for item, fields in info_forms %}
-                <div class="profile_item" id="profile_checkAll">
-                    <input type="checkbox" id="checkAll" name="{{item}}_checkAll"/>
+                <div class="profile_item">
+                    <div id="profile_checkAll" style="width:5%; float:left;">
+                        <input type="checkbox" id="checkAll" name="{{item}}_checkAll"/>
+                    </div>
                     <strong> {{ item }} </strong>
                 </div>       
 
                 <div class="profile_fields" id="{{item}}_fields">
-                    <table align="center" id="testetabela">
+                    <table align="center">
                     {% for label, info in fields %}
                         <tr><td> {{ label }}: </td><td id="info">{{ info }}</td></tr>
                     {% endfor %}

@@ -4,7 +4,7 @@
 <script type="text/javascript">
 
         jQuery(document).ready(function(){
-            $(".signup form table tr td#phone_form").numeric();
+            $("#phone_form").numeric();
         });
 </script>
 
@@ -55,12 +55,20 @@ p .error
                         <td><label for="id_email">Email:</label></td><td>{{ regis_form.email }}</td>
                         {% if regis_form.email.errors %}
                             <td style="color: red;">{{ regis_form.email.errors }}</td>
+                        {% else %}
+                            {% if regist_form_errors.0 == 'email' %}
+                                <td style="color: red;">{{ regist_form_errors.1 }}</td>
+                            {% endif %}
                         {% endif %}
                     </tr>
                     <tr>                    
                         <td><label for="id_first_name">First Name:</label></td><td>{{ regis_form.first_name }}</td>
                         {% if regis_form.first_name.errors %}
                             <tr><td style="color: red;">{{ regis_form.first_name.errors }}</td>
+                        {% else %}
+                            {% if regist_form_errors.0 == 'name' %}
+                                <td style="color: red;">{{ regist_form_errors.1 }}</td>
+                            {% endif %}
                         {% endif %}
                     </tr>
                     <tr>
