@@ -20,8 +20,6 @@ class ItemAdmin(admin.ModelAdmin):
 
 class MDAdmin(admin.ModelAdmin):
     inlines = [ItemInline, PhoneNumberInline]
-    list_display = ('name',)
-    search_fields = ['name']
 
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Doctor, MDAdmin)

@@ -1,18 +1,22 @@
 {% extends "basic/base.html" %}
 
-
+<!-- Adiciona o arquivo .css relacionado a essa pagina. -->
 {% block style %}
     {{ block.super }}
     <link rel=Stylesheet href="/static/styles/md_profile.css" type="text/css">
 {% endblock %}
 
+<!-- Ajusta o titulo da pagina. -->
 {% block title %} {{ object.name }} - Perfil {% endblock %}
+
 
 {% block script %}
     {{ block.super }}
     <script type="text/javascript">
 
         jQuery(document).ready(function(){
+
+            //Faz o efeito de 'Accordion' nos elementos.
             $(".accordion .profile_item:first").addClass("active");
 	        $(".accordion .profile_fields:not(:first)").hide();
 
@@ -23,19 +27,28 @@
                 $(this).siblings(".profile_item").removeClass("active");
 	        });
 
-            {% if not phoneform_errors %}
+            /* 
+             * Decide qual parte eh para ser mostrada:
+             * se a de mostrar o perfil do medico ou a de mudar este perfil.
+             */
+            {% if not phoneform_errors and not name_email_error %}
                 $(".profile_change").hide();
             {% else %}
                 $(".profile").hide();
             {% endif %}
             
+            //impede que seja digitado valores nao numericos na caixa de texto.
             $("td#phone_text").numeric();
 
+            //quando o usuario clica no botao, muda-se o que eh visualizado para
+            //as opcoes de mudanca de perfil.
             $(".profile .profile_change_button").click(function(){ 
                 $(".profile").hide();
                 $(".profile_change").show();
             });
 
+            //Possibilida a "checagem" de todas as checkbox de uma determinada div
+            //apenas por clicando em uma checkbox especifica.
             $(".profile_change form#profileform #checkAll").click(function(){
                 var item = $(this).attr("name").split("_")[0]
                 if($(this).attr("checked") == true) {
@@ -46,12 +59,14 @@
                 }
             });
 
+            
             $(".profile_change form#profileform .accordion .profile_fields td#info").click(function(){
                 var item = $(this).parent().parent().parent().parent().attr("id").split("_")[0]
                 $(".profile_change form#profileform #checkAll[name="+item+"_checkAll]").attr("checked", false);
             });
 
 
+            //Adiciona uma nova linha para a tabela de telefones.
             $(".profile_change #add_phone").click(function(){
                 var c = $(".profile_change #form_table tr:last").attr("id");
                 var strs = c.split("_",3);
@@ -61,9 +76,9 @@
                 .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
                     "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
                     "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
-
             });            
 
+            //Remove a linha da tabela de telefone que o usuario decidiu deletar.
             $(".profile_change #form_table #delete_phone").live('click', function(event) {
                 var c = $(".profile_change #form_table tr").length - 1;
 
@@ -83,9 +98,11 @@
 
 {% block content %}
     
+    <!-- Mostra as informacoes do perfil do usuario. -->
     <div class="profile">    
-        <h2 align="center">{{ object.name }} - Profile</h2>
+        <h2 align="center">{{ user.get_full_name }} - Profile</h2>
 
+        <!-- Se o usuario mudou algo uma mensagem eh mostrada. -->
         {% if changed %}
             <p style="color: blue;" align="right">
                 <script> 
@@ -104,6 +121,7 @@
         
         <hr width="45%" align="right" />
 
+        <!-- Mostra todos os telefones registrados. -->
         <div id="profile_fields" align = "left">
             <field_title><strong> Registered Phones: </strong></field_title>
             {% for phone in object.phonenumber_set.all %}
@@ -118,6 +136,7 @@
 
         <h3 align="left"> &nbsp; Informations you want to receive: </h3>
   
+        <!-- Mostra todos itens e campos escolhidos. -->
         <div class="accordion">
             {% for item, fields in object_itens_fields %}
                 <div class="profile_item" style="width:100%;">
@@ -134,6 +153,7 @@
         </div>
     </div>
 
+    <!-- Mostra um formulario para alteracao das informacoes. -->
     <div class="profile_change">
 
         <form id="profileform" action="." method="POST">
@@ -148,7 +168,7 @@
 
 
             <table align="center" border="0">
-            <!-- Renderiza o campo "Name" do formulário. --> 
+                <!-- Mostra os campos e seus possiveis erros. -->
                 <tr>            
                     <td><label for="id_first_name">First Name:</label></td><td>{{ user_form.first_name }}</td>
                     {% if user_form.first_name.errors %}
@@ -179,7 +199,7 @@
 
                 <th colspan="2" align="center">Phone Numbers:</th>
 
-            <!-- Renderiza os campos "Phone Number" do formulário. -->
+                <!-- Renderiza os campos "Phone Number" do formulário. -->
                 {% for phone in phone_forms %}
                         {% if phone.errors %}
                            <tr id="{{phone.label}}_row"><td style="color: red;">{{ phone.errors }}</td></tr>
@@ -204,7 +224,7 @@
 
         <h3> &nbsp;  Select the data you want to receive: </h3>
 
-        <!-- Laço que faz a renderização de todos os campos das informações que o médico gostaria de receber. -->
+        <!-- Laço que faz a renderização de todos os campos das informações que o médico pode receber. -->
         <div class="accordion">
             {% for item, fields in info_forms %}
                 <div class="profile_item">

@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import auth
 
-##############################################
+###############################################
 
 
 def index(request):
@@ -216,10 +216,9 @@ def profile(request, template_name='md_manager/md_profile.html'):
             profilePOSTHandler(request, doctor, forms)
             changed = True
     else:
-        dic_form = {'name': doctor.name}
+        dic_form = {}
         #o dicionario 'dic_form' eh atualizado para que as opcoes ja relacionadas
-        #ao medico em questao estejam marcadas no formulario.
-
+        #ao medico estejam marcadas no formulario.
         for item in doctor.item_set.all():
             for field in item.field_set.all():
                 name = field.name + '_' + item.name
@@ -241,6 +240,7 @@ def profile(request, template_name='md_manager/md_profile.html'):
         num_phonef = len(phone_elems)
     else:
         num_phonef = len(doctor.phonenumber_set.all())  
+    #adiciona o numero adequado de campos para telefone ao formulario.
     forms.add_phoneNumber(howmany=num_phonef)
 
     info_forms = []
@@ -252,24 +252,32 @@ def profile(request, template_name='md_manager/md_profile.html'):
             f = field + '_' + item
             f_list.append((field, forms[f]))
         info_forms.append((item, f_list))
-    phone_forms = []
 
+    phone_forms = []
+    #lista com os campos do formulario para os telefones.
     for phonef in forms.phone_list:
         phone_forms.append(forms[phonef.label])
     
     user_form = UserCreationFormExtended(
         {'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name})
 
-    return render_to_response(template_name, {'object': doctor, 'forms': forms, 'info_forms': info_forms,
+    return render_to_response(template_name, 
+                             {
+                              'object': doctor, 
+                              'forms': forms, 
+                              'info_forms': info_forms,
                               'phone_forms': phone_forms, 'changed': changed,
                               'phoneform_errors': phonef_error_messages,
                               'phoneform_success': phonef_success_messages,
-                              'object_itens_fields': doc_itens_fields, 'user_form': user_form,
-                              'name_email_error': name_email_error},
-                              context_instance = RequestContext(request))
+                              'object_itens_fields': doc_itens_fields, 
+                              'user_form': user_form,
+                              'name_email_error': name_email_error
+                             }, context_instance = RequestContext(request))
 
 def registerPOSTHandler(post_request, new_user):
-    
+    """ Salva um novo medico relacionado a um novo usuario. """    
+
+
     doctor_name = post_request['first_name'] + ' ' + post_request['last_name']
 
     doctor = Doctor(name=doctor_name, user=new_user)
@@ -296,30 +304,32 @@ def register(request, template_name='registration/register.html'):
 
         phonef_error_message = phoneFormErrors('', request.POST['phone'])
 
+        #inicializa os formularios com as informacoes obtidas do request.POST.
         signup_form = SignupForm(request.POST)
         regis_form = UserCreationFormExtended(request.POST)
 
         regist_form_errors = verifyNameAndEmail(request.POST, request.POST['email'],
             request.POST['first_name'] + ' ' + request.POST['last_name'])
 
+        #caso esteja tudo ok, um novo usuario eh criado.
         if not phonef_error_message and not regist_form_errors and signup_form.is_valid() and regis_form.is_valid():
-           
             new_user = regis_form.save(request.POST)
             new_doctor = registerPOSTHandler(request.POST, new_user)
-
         elif phonef_error_message:
             phonef_error_message = phonef_error_message[1]
     else:
         signup_form = SignupForm()
         regis_form = UserCreationFormExtended()
 
-    return render_to_response(template_name, {'object': new_doctor,
+    return render_to_response(template_name, 
+                             {
+                              'object': new_doctor,
                               'signup_form': signup_form,
                               'regis_form': regis_form,
                               'regist_form_error': regist_form_errors,
                               'phoneform_error': phonef_error_message,
-                              'regist_form_errors': regist_form_errors},
-                               context_instance = RequestContext(request))
+                              'regist_form_errors': regist_form_errors
+                             }, context_instance = RequestContext(request))
 
 
 
