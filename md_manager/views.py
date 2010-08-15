@@ -308,7 +308,7 @@ def register(request, template_name='registration/register.html'):
         signup_form = SignupForm(request.POST)
         regis_form = UserCreationFormExtended(request.POST)
 
-        regist_form_errors = verifyNameAndEmail(request.POST, request.POST['email'],
+        regist_form_errors = verifyNameAndEmail(request.POST['email'],
             request.POST['first_name'] + ' ' + request.POST['last_name'])
 
         #caso esteja tudo ok, um novo usuario eh criado.
@@ -331,5 +331,5 @@ def register(request, template_name='registration/register.html'):
                               'regist_form_errors': regist_form_errors
                              }, context_instance = RequestContext(request))
 
-
+def login(request): pass
 

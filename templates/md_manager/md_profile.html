@@ -80,9 +80,9 @@
 
             //Remove a linha da tabela de telefone que o usuario decidiu deletar.
             $(".profile_change #form_table #delete_phone").live('click', function(event) {
-                var c = $(".profile_change #form_table tr").length - 1;
+                var c = $(".profile_change #form_table tr").length - 4;
 
-                if(c == 1) {
+                if(c <= 1) {
                     jAlert("You must have at least one phone number.", "Alert");
                 } 
                 else {
