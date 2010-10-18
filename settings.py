@@ -95,7 +95,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'pertmed_site.md_manager',
+    'md_manager',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
 )
