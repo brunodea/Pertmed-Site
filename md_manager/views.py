@@ -140,6 +140,7 @@ def checkPhoneForm(request):
         return (error_messages, success_messages)
 
     #Se tiver mais de 30 campos para telefones as verificacoes do excedente nao sao feitas.
+    #deve ter como ver isso direto no banco, dunno
     for i in range(0, 30):
         phn = 'Phone_' + str(i)
         try:
@@ -155,21 +156,22 @@ def checkPhoneForm(request):
 
     return (error_messages, success_messages)
 
+    #TODO: passar a responsabilidade de verificacao para o banco
 def verifyNameAndEmail(email, name):
     """ Verifica se o nome e email passados como parametro ja existem no BD.
         Retorna uma tupla com o nome do campo incorreto e a mensagem do erro. """
 
     error = ''
-    if email in [umails.email for umails in User.objects.all()]:
+    if email in [umails.email for umails in User.objects.all()]: #PROBLEMA: estamos passando HORRORES de dados pra memoria RAM -> desnecessario
         error = ('email', 'Email already registered.')
 
-    elif name in [dname.name for dname in Doctor.objects.all()]:
+    elif name in [dname.name for dname in Doctor.objects.all()]: #mesmo acima
         error = ('name', 'Name already registered.')
 
     return error
 
 @login_required
-def profile(request, template_name='md_manager/md_profile.html'):
+def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERIA CONVENIENTE DIVIDIR EM FUNCOES MENORES, FICARIA MAIS FACIL DE DAR MANUTENCAO
     """ Mostra o perfil do medico e permite sua alteracao. """
     user = request.user
   
@@ -307,7 +309,8 @@ def register(request, template_name='registration/register.html'):
         #inicializa os formularios com as informacoes obtidas do request.POST.
         signup_form = SignupForm(request.POST)
         regis_form = UserCreationFormExtended(request.POST)
-
+        
+        #ao invez disso, usar um bloco try/except para pegar a excessao que sera jogada. (violacao de unicidade: email, first name e last name devem sem campos unique)
         regist_form_errors = verifyNameAndEmail(request.POST['email'],
             request.POST['first_name'] + ' ' + request.POST['last_name'])
 
@@ -331,5 +334,5 @@ def register(request, template_name='registration/register.html'):
                               'regist_form_errors': regist_form_errors
                              }, context_instance = RequestContext(request))
 
-def login(request): pass
+def login(request): pass ##FUNCAO NECESSARIA?
 
