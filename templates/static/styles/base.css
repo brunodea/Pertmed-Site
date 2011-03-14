@@ -34,7 +34,7 @@ body
 #header h5 a:hover { color: #fff; text-decoration:none; }
 #header h5 a:active { color: #888f91; text-decoration:none; }
 
-.site_body
+#site_body
 {
     border-top: solid 1px #99bbdb;
     background: #c4ced7;  

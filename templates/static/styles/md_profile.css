@@ -63,12 +63,12 @@
     text-align: left;
 }
 
-.profile_change #form_table #delete_phone
+#profile_change .delete_phone
 {
     cursor: pointer;
 }
 
-.profile_change #add_phone
+#add_phone
 {
     color: blue;
     cursor: pointer;

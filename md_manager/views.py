@@ -334,7 +334,7 @@ def register(request, template_name='registration/register.html'):
                               'regist_form_errors': regist_form_errors
                              }, context_instance = RequestContext(request))
 
-def login(request): pass ##FUNCAO NECESSARIA?
+def login(request): pass #necessaria para visualizacao da pagina do admin.
 
 def pageNotFound(request):
     return render_to_response('404.html', context_instance = RequestContext(request))

@@ -32,62 +32,62 @@
              * se a de mostrar o perfil do medico ou a de mudar este perfil.
              */
             {% if not phoneform_errors and not name_email_error %}
-                $(".profile_change").hide();
+                $("#profile_change").hide();
             {% else %}
-                $(".profile").hide();
+                $("#profile").hide();
             {% endif %}
             
             //impede que seja digitado valores nao numericos na caixa de texto.
-            $("td#phone_text").numeric();
+            $("#phone_form_table .phone_text").numeric();
 
             //quando o usuario clica no botao, muda-se o que eh visualizado para
             //as opcoes de mudanca de perfil.
-            $(".profile .profile_change_button").click(function(){ 
-                $(".profile").hide();
-                $(".profile_change").show();
+            $("#profile #profile_change_button").click(function(){ 
+                $("#profile").hide();
+                $("#profile_change").show();
             });
 
             //Possibilida a "checagem" de todas as checkbox de uma determinada div
             //apenas por clicando em uma checkbox especifica.
-            $(".profile_change form#profileform #checkAll").click(function(){
+            $("#profile_change form#profileform #checkAll").click(function(){
                 var item = $(this).attr("name").split("_")[0]
                 if($(this).attr("checked") == true) {
-                    $(".profile_change #profileform .profile_fields#"+item+"_fields").checkCheckboxes();
+                    $("#profile_change #profileform .profile_fields#"+item+"_fields").checkCheckboxes();
                 }
                 else {
-                    $(".profile_change #profileform .profile_fields#"+item+"_fields").unCheckCheckboxes();
+                    $("#profile_change #profileform .profile_fields#"+item+"_fields").unCheckCheckboxes();
                 }
             });
 
             
-            $(".profile_change form#profileform .accordion .profile_fields td#info").click(function(){
+            $(".#profile_change form#profileform .accordion .profile_fields td#info").click(function(){
                 var item = $(this).parent().parent().parent().parent().attr("id").split("_")[0]
-                $(".profile_change form#profileform #checkAll[name="+item+"_checkAll]").attr("checked", false);
+                $("#profile_change form#profileform #checkAll[name="+item+"_checkAll]").attr("checked", false);
             });
 
 
             //Adiciona uma nova linha para a tabela de telefones.
-            $(".profile_change #add_phone").click(function(){
-                var c = $(".profile_change #form_table tr:last").attr("id");
+            $("#profile_change #add_phone").click(function(){
+                var c = $("#profile_change #phone_form_table tr:last").attr("id");
                 var strs = c.split("_",3);
                 c = parseInt(strs[1]) + 1;
 
-                $(".profile_change #form_table > table:last")
+                $("#profile_change #phone_form_table:last")
                 .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
                     "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
-                    "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
+                    "<td><img class='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
             });            
 
             //Remove a linha da tabela de telefone que o usuario decidiu deletar.
-            $(".profile_change #form_table #delete_phone").live('click', function(event) {
-                var c = $(".profile_change #form_table tr").length - 4;
+            $("#profile_change .delete_phone").live('click', function(event) {
+                var c = $("#profile_change #phone_form_table tr").length;
 
                 if(c <= 1) {
                     jAlert("You must have at least one phone number.", "Alert");
                 } 
                 else {
                     var id = $(this).parent().parent().attr("id");
-                    $(".profile_change #form_table #" + id).remove();
+                    $("#profile_change #phone_form_table #" + id).remove();
                 }
             });
         });
@@ -99,7 +99,7 @@
 {% block content %}
     
     <!-- Mostra as informacoes do perfil do usuario. -->
-    <div class="profile">    
+    <div id="profile">    
         <h2 align="center">{{ user.get_full_name }} - Profile</h2>
 
         <!-- Se o usuario mudou algo uma mensagem eh mostrada. -->
@@ -114,7 +114,7 @@
         {% endif %}
 
         
-        <div class="profile_change_button" align="right">
+        <div id="profile_change_button" align="right">
             <button type="button">Change Information</button>
         </div>   
 
@@ -154,18 +154,15 @@
     </div>
 
     <!-- Mostra um formulario para alteracao das informacoes. -->
-    <div class="profile_change">
+    <div id="profile_change">
 
         <form id="profileform" action="." method="POST">
         <!-- Token necessário para evitar a duplicação de informação enviada via formulário. -->
         {% csrf_token %}
-        <div id="form_table">
-
             <h2 align="center"> Modify your profile </h2>
-            <div class="profile_done_button" align="right"><input type="submit" value="Done" /></div>
+            <div id="profile_done_button" align="right"><input type="submit" value="Done" /></div>
             
             <hr width="45%" align="right" />
-
 
             <table align="center" border="0">
                 <!-- Mostra os campos e seus possiveis erros. -->
@@ -198,6 +195,8 @@
                 </tr>       
 
                 <th colspan="2" align="center">Phone Numbers:</th>
+            </table>
+            <table id="phone_form_table" align="center" border="0">
 
                 <!-- Renderiza os campos "Phone Number" do formulário. -->
                 {% for phone in phone_forms %}
@@ -212,14 +211,13 @@
                                 {% endfor %}
                             {% endif %}
                         {% endif %}
-                    <tr id="{{phone.label}}_row">
+                    <tr>
                         <td>Phone Number:</td>
-                        <td id="phone_text">{{ phone }}</td>
-                        <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
+                        <td class="phone_text">{{ phone }}</td>
+                        <td><img class="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
                     </tr> 
                 {% endfor %}
             </table>
-        </div>
         <center><img id="add_phone" src="/static/images/add.png" alt="Add Phone" width="16px" height="16px"/></center>
 
         <h3> &nbsp;  Select the data you want to receive: </h3>
@@ -229,7 +227,7 @@
             {% for item, fields in info_forms %}
                 <div class="profile_item">
                     <div id="profile_checkAll" style="width:5%; float:left;">
-                        <input type="checkbox" id="checkAll" name="{{item}}_checkAll"/>
+                        <input type="checkbox" class="checkAll" name="{{item}}_checkAll"/>
                     </div>
                     <strong> {{ item }} </strong>
                 </div>       
@@ -237,7 +235,7 @@
                 <div class="profile_fields" id="{{item}}_fields">
                     <table align="center">
                     {% for label, info in fields %}
-                        <tr><td> {{ label }}: </td><td id="info">{{ info }}</td></tr>
+                        <tr><td> {{ label }}: </td><td class="info">{{ info }}</td></tr>
                     {% endfor %}
                     </table>
                 </div>
