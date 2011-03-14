@@ -29,11 +29,11 @@
         
         //efeito no menu da esquerda.
         jQuery(document).ready(function(){
-            $(".site_body #leftMenu #user_options").hide()
+            $("#site_body #leftMenu #user_options").hide()
         
-            $(".site_body #leftMenu #login").click(function(){    
-                $(this).next(".site_body #leftMenu #user_options").slideToggle("fast")
-                  .siblings(".site_body #leftMenu #user_options:visible").slideUp("fast");
+            $("#site_body #leftMenu #login").click(function(){    
+                $(this).next("#site_body #leftMenu #user_options").slideToggle("fast")
+                  .siblings("#site_body #leftMenu #user_options:visible").slideUp("fast");
             });
         });
     </script>
@@ -53,7 +53,7 @@
         <br />
     </div>
     
-    <div class="site_body">
+    <div id="site_body">
         <div id="leftMenu" align="center">
             <div class="menu_title" align="center">
                 <strong>.:: MENU ::.</strong>
