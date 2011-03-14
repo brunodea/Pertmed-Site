@@ -36,7 +36,7 @@ class ItemTitle(models.Model):
         
 class ItemField(models.Model):
     parent_item = models.ForeignKey(ItemTitle)
-    field_name = models.ChaField(max_length=30)
+    field_name = models.CharField(max_length=30)
     
     def __unicode__(self):
         return self.field_name
