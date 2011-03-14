@@ -75,11 +75,11 @@
                 $("#profile_change #phone_form_table:last")
                 .append("<tr id='Phone_" + c + "_row'><td>Phone Number:</td><td><input id='id_Phone_" + c + 
                     "' type='text' name='Phone_" + c + "' maxlength='10'></input></td>" + 
-                    "<td><img id='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
+                    "<td><img class='delete_phone' src='/static/images/X.png' alt='Delete Phone' width='15px' height='15px' / ></td></tr>");
             });            
 
             //Remove a linha da tabela de telefone que o usuario decidiu deletar.
-            $("#profile_change #delete_phone").live('click', function(event) {
+            $("#profile_change .delete_phone").live('click', function(event) {
                 var c = $("#profile_change #phone_form_table tr").length;
 
                 if(c <= 1) {

@@ -63,7 +63,7 @@
     text-align: left;
 }
 
-#profile_change #delete_phone
+#profile_change .delete_phone
 {
     cursor: pointer;
 }
