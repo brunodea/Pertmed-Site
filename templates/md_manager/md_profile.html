@@ -38,7 +38,7 @@
             {% endif %}
             
             //impede que seja digitado valores nao numericos na caixa de texto.
-            $("td#phone_text").numeric();
+            $("#phone_form_table .phone_text").numeric();
 
             //quando o usuario clica no botao, muda-se o que eh visualizado para
             //as opcoes de mudanca de perfil.
@@ -211,10 +211,10 @@
                                 {% endfor %}
                             {% endif %}
                         {% endif %}
-                    <tr id="{{phone.label}}_row">
+                    <tr>
                         <td>Phone Number:</td>
-                        <td id="phone_text">{{ phone }}</td>
-                        <td><img id="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
+                        <td class="phone_text">{{ phone }}</td>
+                        <td><img class="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
                     </tr> 
                 {% endfor %}
             </table>
@@ -227,7 +227,7 @@
             {% for item, fields in info_forms %}
                 <div class="profile_item">
                     <div id="profile_checkAll" style="width:5%; float:left;">
-                        <input type="checkbox" id="checkAll" name="{{item}}_checkAll"/>
+                        <input type="checkbox" class="checkAll" name="{{item}}_checkAll"/>
                     </div>
                     <strong> {{ item }} </strong>
                 </div>       
@@ -235,7 +235,7 @@
                 <div class="profile_fields" id="{{item}}_fields">
                     <table align="center">
                     {% for label, info in fields %}
-                        <tr><td> {{ label }}: </td><td id="info">{{ info }}</td></tr>
+                        <tr><td> {{ label }}: </td><td class="info">{{ info }}</td></tr>
                     {% endfor %}
                     </table>
                 </div>
