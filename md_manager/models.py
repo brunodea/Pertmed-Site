@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Doctor(models.Model):
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True) 
     name = models.CharField(max_length=30)    
 
     def __unicode__(self):
@@ -26,19 +26,24 @@ class PhoneNumber(models.Model):
     def __unicode__(self):
         return '(' + str(self.region) + ')' + str(self.phone)
 
-class Item(models.Model):
-    doctor = models.ForeignKey(Doctor)
-    name = models.CharField(max_length=30)
+#possivel implementacao
 
-    def  __unicode__(self):
-        return self.name
-
-
-class Field(models.Model):
-    item = models.ForeignKey(Item)
-    name = models.CharField(max_length=30)
-
+class ItemTitle(models.Model):
+    item_name = models.CharField(max_length=30)
+    
     def __unicode__(self):
         return self.name
+        
+class ItemField(models.Model):
+    parent_item = models.ForeignKey(ItemTitle)
+    field_name = models.ChaField(max_length=30)
+    
+    def __unicode__(self):
+        return self.field_name
+        
+class Notifications(models.Model):
+    doctor = models.ForeignKey(Doctor)
+    field = models.ForeignKey(ItemField)
+    
 
 
