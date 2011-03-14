@@ -336,3 +336,7 @@ def register(request, template_name='registration/register.html'):
 
 def login(request): pass ##FUNCAO NECESSARIA?
 
+def pageNotFound(request):
+    return render_to_response('404.html', context_instance = RequestContext(request))
+
+

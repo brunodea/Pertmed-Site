@@ -8,11 +8,11 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', 'pertmed_site.md_manager.views.index'),
-    (r'^index/$', 'pertmed_site.md_manager.views.index'),
-    (r'^login/$', 'pertmed_site.md_manager.views.login'),
-    (r'^profile/$', 'pertmed_site.md_manager.views.profile'),
-    (r'^register/$', 'pertmed_site.md_manager.views.register'),
+    (r'^$', 'md_manager.views.index'),
+    (r'^index/$', 'md_manager.views.index'),
+    (r'^login/$', 'md_manager.views.login'),
+    (r'^profile/$', 'md_manager.views.profile'),
+    (r'^register/$', 'md_manager.views.register'),
 #    (r'^signup/thanks $', 'pertmed_site.md_manager.views.signup_thanks'),
     (r'^accounts/login/$', login),
     (r'^accounts/logout/$', logout),
@@ -20,3 +20,5 @@ urlpatterns = patterns('',
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^admin/', include(admin.site.urls)),
 )
+
+handler404 = 'md_manager.views.pageNotFound'
