@@ -8,6 +8,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^$', 'pertmed_site.md_manager.views.index'),
     (r'^index/$', 'pertmed_site.md_manager.views.index'),
     (r'^login/$', 'pertmed_site.md_manager.views.login'),
     (r'^profile/$', 'pertmed_site.md_manager.views.profile'),
