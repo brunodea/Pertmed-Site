@@ -3,7 +3,7 @@
 
 ######## Importacoes necessarias #############
 
-from pertmed_site.md_manager.models import Doctor, Item, Field, PhoneNumber
+from pertmed_site.md_manager.models import Doctor, ItemTitle, ItemField, PhoneNumber
 from pertmed_site.md_manager.macros import informations, info_itens    
 from pertmed_site.md_manager.forms import ProfileForm, SignupForm, UserCreationFormExtended
 from django.shortcuts import render_to_response, get_object_or_404
