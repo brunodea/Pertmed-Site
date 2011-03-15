@@ -1,11 +1,7 @@
-from pertmed_site.md_manager.models import Doctor, PhoneNumber, ItemField
+from pertmed_site.md_manager.models import Doctor, PhoneNumber, ItemField, ItemTitle
 from django.contrib import admin
 
-
-class FieldInline(admin.TabularInline):
-    model = ItemField
-    extra = 3
-
-class PhoneNumberInline(admin.TabularInline):
-    model = PhoneNumber
-    extra = 3
+admin.site.register(Doctor)
+admin.site.register(PhoneNumber)
+admin.site.register(ItemField)
+admin.site.register(ItemTitle)
