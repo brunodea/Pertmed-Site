@@ -49,7 +49,7 @@
 
             //Possibilida a "checagem" de todas as checkbox de uma determinada div
             //apenas por clicando em uma checkbox especifica.
-            $("#profile_change form#profileform #checkAll").click(function(){
+            $("#profile_change .checkAll").click(function(){
                 var item = $(this).attr("name").split("_")[0]
                 if($(this).attr("checked") == true) {
                     $("#profile_change #profileform .profile_fields#"+item+"_fields").checkCheckboxes();
@@ -223,24 +223,25 @@
         <h3> &nbsp;  Select the data you want to receive: </h3>
 
         <!-- Laço que faz a renderização de todos os campos das informações que o médico pode receber. -->
-        <div class="accordion">
             {% for item, fields in info_forms %}
-                <div class="profile_item">
-                    <div id="profile_checkAll" style="width:5%; float:left;">
-                        <input type="checkbox" class="checkAll" name="{{item}}_checkAll"/>
-                    </div>
-                    <strong> {{ item }} </strong>
-                </div>       
+                <div class="item_options">
+                    <input type="checkbox" class="checkAll" name="{{item}}_checkAll" style="float:left;"/>
 
-                <div class="profile_fields" id="{{item}}_fields">
-                    <table align="center">
-                    {% for label, info in fields %}
-                        <tr><td> {{ label }}: </td><td class="info">{{ info }}</td></tr>
-                    {% endfor %}
-                    </table>
+                    <div class="accordion" style="width:80%;">
+                        <div class="profile_item">
+                            <strong> {{ item }} </strong>
+                        </div>       
+
+                        <div class="profile_fields" id="{{item}}_fields">
+                            <table align="center">
+                            {% for label, info in fields %}
+                                <tr><td> {{ label }}: </td><td class="info">{{ info }}</td></tr>
+                            {% endfor %}
+                            </table>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
-        </div>
         </form>
     </div>
 
