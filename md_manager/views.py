@@ -184,8 +184,10 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
     name_email_error        = []
     phonef_error_messages   = []  
     phonef_success_messages = []
+
     
     if request.method == 'POST':   
+
         messages = checkPhoneForm(request)     
         phonef_error_messages = messages[0]
         phonef_success_messages = messages[1]
@@ -221,10 +223,16 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
         dic_form = {}
         #o dicionario 'dic_form' eh atualizado para que as opcoes ja relacionadas
         #ao medico estejam marcadas no formulario.
-        for item in doctor.item_set.all():
-            for field in item.field_set.all():
-                name = field.name + '_' + item.name
-                dic_form[name] = [u'on']
+
+ #       for item in doctor.item_set.all():
+ #           for field in item.field_set.all():
+ #               name = field.name + '_' + item.name
+ #               dic_form[name] = [u'on']
+
+        #for notifications in doctor.notifications_set.all():
+        #    itemfield = ItemField.objects.get(id=notifications__field__id)
+        #    parentitem = ItemTitle.objects.get(id=itemfield__parent_item__id)            
+        #    dic_form[parentitem.item_name] = itemfield.field_name
 
         i = 0
         for phone in doctor.phonenumber_set.all():
