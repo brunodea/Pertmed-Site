@@ -225,8 +225,9 @@
         <!-- Laço que faz a renderização de todos os campos das informações que o médico pode receber. -->
             {% for item, fields in info_forms %}
                 <div class="item_options">
-                    <input type="checkbox" class="checkAll" name="{{item}}_checkAll" style="float:left;"/>
-
+                    <div class="checkBoxAll" style="width:3%; float:left;">
+                        <input type="checkbox" class="checkAll" name="{{item}}_checkAll"/>
+                    </div>
                     <div class="accordion" style="width:80%;">
                         <div class="profile_item">
                             <strong> {{ item }} </strong>
