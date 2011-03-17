@@ -9,7 +9,7 @@ class Doctor(models.Model):
         return self.name
 
     def sorted_itens_fields(self):
-        doc_itens = self.item_set.all()
+        doc_itens = self.get_itens_title()
         doc_itens = sorted(doc_itens, key=lambda item: item.name)
 
         doc_itens_fields = []
@@ -17,6 +17,17 @@ class Doctor(models.Model):
             doc_itens_fields.append((item, sorted(item.field_set.all(), key=lambda field: field.name)))
 
         return doc_itens_fields
+		
+	def get_itens_title(self):
+		itens = []
+		notifs = self.notifications_set.all()
+		for notif in notfis:
+			for item in notif:
+				for item_title in item.itemtitle_set.all():
+					if item_title not in itens:
+						itens.append(item_title)
+			
+		return itens
 
 class PhoneNumber(models.Model):
     doctor = models.ForeignKey(Doctor)
