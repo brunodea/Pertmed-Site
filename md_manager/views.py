@@ -42,19 +42,24 @@ def profilePOSTHandler(request, doctor, forms):
 
     #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
     #pelo medico.
-    doc_itens = doctor.item_set.all()
-    for item in doc_itens:  
-        for field in item.field_set.all():
-            f = field.name + '_' + item.name
-            #caso o campo 'f' nao esteja marcado no formulario, ele eh deletado do BD.
-            if not f in request.POST:
-                field.delete()
-        #caso o item em questao nao tenha nenhum campo associado a ele, este eh deletado.
-        if not item.field_set.all():
-            item.delete()
-
+    doc_itens = doctor.notifications_set.all()
+    last_title = ''
+	
+	title = []
+	alert = []
+	
+	for req_str in request.POST:
+		#if req.tem('_')
+		
+	
+	for item in doc_itens:
+		for notif in item.itemfield_set.all():
+			if not notif in request.POST:
+				notif.delete()
+	
     doc_phones = doctor.phonenumber_set.all()
 
+	
     phone_number = ''
 
     #caso o telefone em questao nao esta presente no request, significa que ele
