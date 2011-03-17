@@ -17,27 +17,16 @@ class Doctor(models.Model):
 
         return doc_itens_fields
 		
-	def get_itens_title(self):
-		itens = []
-		notifs = self.notifications_set.all()
-		for notif in notfis:
-			for item in notif:
-				for item_title in item.itemtitle_set.all():
-					if item_title not in itens:
-						itens.append(item_title)
-			
-		return itens
-
     def get_itens_title(self):
-		itens = []
-		notifs = self.notifications_set.all()
-		for notif in notfis:
-			for item in notif:
-				for item_title in item.itemtitle_set.all():
-					if item_title not in itens:
-						itens.append(item_title)
+        itens = []
+        notifs = self.notifications_set.all()
+        for notif in notfis:
+            for item in notif:
+                for item_title in item.itemtitle_set.all():
+                    if item_title not in itens:
+                        itens.append(item_title)
 
-		return itens        
+        return itens        
 
 class PhoneNumber(models.Model):
     doctor = models.ForeignKey(Doctor)

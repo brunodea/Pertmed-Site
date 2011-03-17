@@ -44,19 +44,19 @@ def profilePOSTHandler(request, doctor, forms):
     #pelo medico.
     doc_itens = doctor.notifications_set.all()
     last_title = ''
-	
-	title = []
-	alert = []
-	
-	for req_str in request.POST:
-		#if req.tem('_')
-		
-	
-	for item in doc_itens:
-		for notif in item.itemfield_set.all():
-			if not notif in request.POST:
-				notif.delete()
-	
+
+    title = []
+    alert = []
+
+    #for req_str in request.POST:
+        #if req.tem('_')
+
+
+    for item in doc_itens:
+        for notif in item.itemfield_set.all():
+            if not notif in request.POST:
+                notif.delete()
+
     doc_phones = doctor.phonenumber_set.all()
 
 	
