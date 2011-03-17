@@ -20,8 +20,8 @@ class Doctor(models.Model):
     def get_itens_title(self):
         itens = []
         notifs = self.notifications_set.all()
-        for notif in notfis:
-            for item in notif:
+        for notif in notifs:
+            for item in ItemField.objects.get:
                 for item_title in item.itemtitle_set.all():
                     if item_title not in itens:
                         itens.append(item_title)
