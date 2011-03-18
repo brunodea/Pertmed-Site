@@ -106,6 +106,8 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
     phonef_error_messages   = []  
     phonef_success_messages = []
 
+
+    doctor_itens_fields = doctor.sorted_itens_fields()
     
     if request.method == 'POST':   
 
@@ -155,6 +157,11 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
         #    parentitem = ItemTitle.objects.get(id=itemfield__parent_item__id)            
         #    dic_form[parentitem.item_name] = itemfield.field_name
 
+        for item, fields in doctor_itens_fields:
+            for field in fields:
+                name = field.name + '_' + item
+                dic_form[name] = [u'on']
+
         i = 0
         for phone in doctor.phonenumber_set.all():
             phone_number = phone.region + phone.phone
@@ -163,8 +170,6 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
         
         forms = ProfileForm(dic_form)
     
-    doc_itens_fields = doctor.sorted_itens_fields()
-
     #phonef_error_messages soh tem elementos se entrou no if anterior. Com isso,
     #o metodo do request com certeza eh post.
     if phonef_error_messages: #and request.method == 'POST'
@@ -200,7 +205,7 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
                               'phone_forms': phone_forms, 'changed': changed,
                               'phoneform_errors': phonef_error_messages,
                               'phoneform_success': phonef_success_messages,
-                              'object_itens_fields': doc_itens_fields, 
+                              'object_itens_fields': doctor_itens_fields, 
                               'user_form': user_form,
                               'name_email_error': name_email_error
                              }, context_instance = RequestContext(request))
