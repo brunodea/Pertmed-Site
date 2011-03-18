@@ -51,7 +51,7 @@ class Item(models.Model):
         return self.name
         
 class ItemField(models.Model):
-    item = models.ForeignKey(ItemTitle)
+    item = models.ForeignKey(Item)
     name = models.CharField(max_length=30)
     
     def __unicode__(self):
