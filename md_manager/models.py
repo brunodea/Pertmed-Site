@@ -8,25 +8,33 @@ class Doctor(models.Model):
     def __unicode__(self):
         return self.name
 
+    #faz uma lista de tuplas ordenadas pelo nome do Item e 
+    #uma lista com os Fields de tal Item ordenados pelo seus nomes.
     def sorted_itens_fields(self):
-        doc_itens = self.get_itens_title()
-        doc_itens = sorted(doc_itens, key=lambda item: item.name)
+        itens_dic = self.get_itens_dic()
+        doc_itens = sorted(itens_dic.keys())#sorted(self.item_set.all(), key=lambda item: item.name) #lista de itens do medico ordenados pelo nome.
         doc_itens_fields = []
-        #for item in doc_itens:  
-        #    doc_itens_fields.append((item, sorted(item.field_set.all(), key=lambda field: field.name)))
+
+        for item in doc_itens:
+            fields = sorted(itens_dic[item], key=lambda field: field.name) #lista de field ordenada pelo nome dos fields.
+            doc_itens_fields.append((item, fields))
 
         return doc_itens_fields
 		
-    def get_itens_title(self):
-        itens = []
+    def get_itens_dic(self):
+        itens = {}
         notifs = self.notifications_set.all()
         for notif in notifs:
-            for item in ItemField.objects.get:
-                for item_title in item.itemtitle_set.all():
-                    if item_title not in itens:
-                        itens.append(item_title)
+            field = ItemField.objects.get(id=notif.field.id)
+            item = Item.objects.get(id=field.item.id)
 
-        return itens        
+            try:
+                itens[item.name].append(field)
+            except KeyError:
+                itens[item.name] = []
+                itens[item.name].append(field)
+
+        return itens     
 
 class PhoneNumber(models.Model):
     doctor = models.ForeignKey(Doctor)
@@ -36,24 +44,25 @@ class PhoneNumber(models.Model):
     def __unicode__(self):
         return '(' + str(self.region) + ')' + str(self.phone)
 
-#possivel implementacao
-
-class ItemTitle(models.Model):
-    item_name = models.CharField(max_length=30)
+class Item(models.Model):
+    name = models.CharField(max_length=30)
     
     def __unicode__(self):
-        return self.item_name
+        return self.name
         
 class ItemField(models.Model):
-    parent_item = models.ForeignKey(ItemTitle)
-    field_name = models.CharField(max_length=30)
+    item = models.ForeignKey(ItemTitle)
+    name = models.CharField(max_length=30)
     
     def __unicode__(self):
-        return self.field_name
+        return self.name
         
 class Notifications(models.Model):
     doctor = models.ForeignKey(Doctor)
     field = models.ForeignKey(ItemField)
+
+    def __unicode__(self):
+        return self.doctor.name + ', field id: ' + str(self.field.id)
     
 
 
