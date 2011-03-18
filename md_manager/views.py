@@ -31,90 +31,6 @@ def index(request):
 
     return render_to_response("basic/base.html", {'object': user}, context_instance = RequestContext(request))
 
-def profilePOSTHandler(request, doctor, forms):
-    """ Lida com as informacoes do request.POST enviadas via formulario 
-        para alteracao do perfil do usuario """
-    user = request.user
-    user.first_name = request.POST['first_name'] 
-    user.last_name  = request.POST['last_name']
-    user.email = request.POST['email']
-    user.save() #salva os novos nome e email do usuario.
-
-    #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
-    #pelo medico.
-    doc_itens = doctor.notifications_set.all()
-    last_title = ''
-
-    title = []
-    alert = []
-
-    #for req_str in request.POST:
-        #if req.tem('_')
-
-
-    for item in doc_itens:
-        for notif in item.itemfield_set.all():
-            if not notif in request.POST:
-                notif.delete()
-
-    doc_phones = doctor.phonenumber_set.all()
-
-	
-    phone_number = ''
-
-    #caso o telefone em questao nao esta presente no request, significa que ele
-    #foi descartado pelo medico, entao eh deletado do BD.
-    for phone in doc_phones:
-        phone_number = phone.region + phone.phone
-        deleted_phone = True
-
-        for elem in request.POST:
-            if elem.startswith('Phone_') and phone_number == request.POST[elem]:
-                deleted_phone = False
-                break
-        if deleted_phone:
-            phone.delete()
-
-    #Adiciona ao BD as informacoes adicionadas pelo medico.
-    for elem in request.POST:
-        part = elem.partition('_')
-        #se o terceiro elemento da tripla "part" existir e constar na lista
-        #de 'itens' do CCR, significa que se trata de um 'field'.
-        if part[2] and part[2] in info_itens:
-            doc_item = doctor.item_set.filter(name=part[2])
-            if not doc_item:
-                item = Item(name=part[2], doctor=doctor)
-                item.save()
-                field = Field(name=part[0], item=item)
-                field.save()
-                item.field_set.add(field)
-                item.save()
-                doctor.item_set.add(item)
-                doctor.save()
-            else:
-                item_field = doc_item[0].field_set.filter(name=part[0])
-                if not item_field:
-                    field = Field(name=part[0], item=doc_item[0])
-                    field.save()
-                    doc_item[0].field_set.add(field)
-                    doc_item[0].save()
-        #Se o primeiro elemento da tripla 'part' for "Phone", significa que se trata
-        #de um telefone.
-        elif part[0] == 'Phone':
-            phone = request.POST[elem]
-
-            #como o telefone passado eh um numero de 10digitos, os dois primeiros
-            #representam o numero da regiao e o resto o numero do telefone propriamente dito.
-            region = phone[:2]
-            number = phone[2:]
-
-            doc_phone = doctor.phonenumber_set.filter(region=region, phone=number)   
-            if not doc_phone:
-                new_phone = PhoneNumber(region=region, phone=number, doctor=doctor)
-                new_phone.save()
-                doctor.phonenumber_set.add(new_phone)
-                doctor.save()
-
 def phoneFormErrors(label, phone_number):
     """ Realiza alguns testes verificando se o campo do formulario de um telefone
         nao contem erros. Erros possiveis:
@@ -222,7 +138,7 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
                 request.POST['first_name'] + ' ' + request.POST['last_name']) 
 
         if not phonef_error_messages and not name_email_error and forms.is_valid():
-            profilePOSTHandler(request, doctor, forms)
+            #profilePOSTHandler(request, doctor, forms)
             changed = True
     else:
         dic_form = {}
