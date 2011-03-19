@@ -1,19 +1,17 @@
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-import md_manager.macros
-from md_manager.models import ItemTitle, ItemField
+import md_manager.macros import infos_dic
+from md_manager.models import Item, ItemField
 
-ItemTitle.objects.all().delete()
+Item.objects.all().delete()
 ItemField.objects.all().delete()
 
-index = 0
-for title in md_manager.macros.info_itens:
-    itt = ItemTitle(item_name=title)
-    itt.save()
+for title in infos_dic.keys():
+    item = Item(name=title)
+    item.save()
     
-    for field in md_manager.macros.info_fields[index]:
-        itf = ItemField(parent_item=itt, field_name=field) 
-        itf.save()
+    for field in infos_dic[title]:
+        item_field = ItemField(item=item, name=field) 
+        item_field.save()
         
-    index += 1
