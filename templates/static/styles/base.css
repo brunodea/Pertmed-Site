@@ -76,7 +76,7 @@ body
 #leftMenu .element:hover
 {
     background: #6a7279;
-    cursor: pointer;
+    /*cursor: pointer;*/
     color: #97bbdc;
 }
 
@@ -99,7 +99,7 @@ body
 {
     background: #5d82a4;
     color: #2a4157;
-    cursor: pointer;
+    cursor: default;
 }
 
 #login:hover
