@@ -3,7 +3,7 @@
 
 ######## Importacoes necessarias #############
 
-from pertmed_site.md_manager.models import Doctor, Item, ItemField, PhoneNumber
+from pertmed_site.md_manager.models import Doctor, Item, ItemField, Notifications, PhoneNumber
 from pertmed_site.md_manager.macros import informations, info_itens    
 from pertmed_site.md_manager.forms import ProfileForm, SignupForm, UserCreationFormExtended
 from django.shortcuts import render_to_response, get_object_or_404
@@ -91,6 +91,79 @@ def verifyNameAndEmail(email, name):
 
     return error
 
+#funcao que, apos tudo ser validado, altera as informacoes acerca do medico.
+def profilePOSTHandler(request, doctor, forms):
+    """ Lida com as informacoes do request.POST enviadas via formulario 
+        para alteracao do perfil do usuario """
+    user = request.user
+    user.first_name = request.POST['first_name'] 
+    user.last_name  = request.POST['last_name']
+    user.email = request.POST['email']
+    user.save() #salva os novos nome e email do usuario.
+
+    #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
+    #pelo medico.
+    doc_itens = doctor.sorted_itens_fields()
+    last_title = ''
+
+    title = []
+    alert = []
+
+    for item, fields in doc_itens:
+        for field in fields:
+            name = 'itemfield_' + str(item.id) + '_' + str(field.id)
+            if not name in request.POST:
+                notif = Notifications.objects.get(doctor=doctor, field=field)
+                notif.delete()
+
+    doc_phones = doctor.phonenumber_set.all()
+
+	
+    phone_number = ''
+
+    #caso o telefone em questao nao esta presente no request, significa que ele
+    #foi descartado pelo medico, entao eh deletado do BD.
+    for phone in doc_phones:
+        phone_number = phone.region + phone.phone
+        deleted_phone = True
+
+        for elem in request.POST:
+            if elem.startswith('Phone_') and phone_number == request.POST[elem]:
+                deleted_phone = False
+                break
+        if deleted_phone:
+            phone.delete()
+
+    #Adiciona ao BD as informacoes adicionadas pelo medico.
+    for elem in request.POST:
+        part = elem.partition('_')
+        if part[0] == 'itemfield':
+            sub_part = part[2].partition('_')
+            field_id = int(sub_part[2])
+            field = ItemField.objects.get(id=field_id)
+            doc_item = doctor.notifications_set.filter(field=field)
+            if not doc_item: #se o medico ja nao tem tal field.
+                notification = Notifications(doctor=doctor, field=field)
+                notification.save()
+
+        #Se o primeiro elemento da tripla 'part' for "Phone", significa que se trata
+        #de um telefone.
+        elif part[0] == 'Phone':
+            phone = request.POST[elem]
+
+            #como o telefone passado eh um numero de 10digitos, os dois primeiros
+            #representam o numero da regiao e o resto o numero do telefone propriamente dito.
+            region = phone[:2]
+            number = phone[2:]
+
+            doc_phone = doctor.phonenumber_set.filter(region=region, phone=number)   
+            if not doc_phone:
+                new_phone = PhoneNumber(region=region, phone=number, doctor=doctor)
+                new_phone.save()
+                doctor.phonenumber_set.add(new_phone)
+                doctor.save()
+
+
 @login_required
 def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERIA CONVENIENTE DIVIDIR EM FUNCOES MENORES, FICARIA MAIS FACIL DE DAR MANUTENCAO
     """ Mostra o perfil do medico e permite sua alteracao. """
@@ -107,7 +180,7 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
     phonef_success_messages = []
 
 
-    doctor_itens_fields = doctor.sorted_itens_fields()
+    doctor_itens_fields = []
     
     if request.method == 'POST':   
 
@@ -140,14 +213,17 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
                 request.POST['first_name'] + ' ' + request.POST['last_name']) 
 
         if not phonef_error_messages and not name_email_error and forms.is_valid():
-            #profilePOSTHandler(request, doctor, forms)
+            profilePOSTHandler(request, doctor, forms)
             changed = True
+
+        doctor_itens_fields = doctor.sorted_itens_fields()
     else:
         dic_form = {}
+
+        
+        doctor_itens_fields = doctor.sorted_itens_fields()
         #o dicionario 'dic_form' eh atualizado para que as opcoes ja relacionadas
         #ao medico estejam marcadas no formulario.
-
-
         for item, fields in doctor_itens_fields:
             for field in fields:
                 name = 'itemfield_' + str(item.id) + '_' + str(field.id)
