@@ -43,14 +43,14 @@
     width: 50%;
 }
 
-#profile_fields #phone
+#profile_fields .phone
 {
     margin-left: 20px;
     position: relative;
     text-align: left;
 }
 
-#profile_fields #phone:hover
+#profile_fields .phone:hover
 {
     background: #cfcfcf;
 }

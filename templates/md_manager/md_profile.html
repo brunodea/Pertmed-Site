@@ -125,7 +125,7 @@
         <div id="profile_fields" align = "left">
             <field_title><strong> Registered Phones: </strong></field_title>
             {% for phone in object.phonenumber_set.all %}
-                <div id="phone">
+                <div class="phone">
                     <strong>Phone Number:</strong>
                     ({{ phone.region }}){{ phone.phone }}
                 </div>
