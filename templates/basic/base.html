@@ -67,12 +67,11 @@
                         (<a href="/register/">register</a>)
                     </div>  
                  {% else %}
-                    <div class="element" id="login" style="background: #5d82a4;">
+                    <div class="element" id="login">
                         Dr. <strong>{{ user.get_full_name }}</strong>
                         <a href="/accounts/logout/">logout</a>
                     </div>  
-                    <div href="" id="user_options" style="cursor: default; background: #8b949b; 
-                        margin-left: 10px; margin-right: 10px; margin-bottom: 3px; border: solid 1px #6a7279;">
+                    <div id="user_options">
                         <table>
                             <tr><td><a href="/profile/">Profile</td></tr>
                         </table>

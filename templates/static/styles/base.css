@@ -77,7 +77,17 @@ body
 {
     background: #6a7279;
     cursor: pointer;
-    color: #97bbdc
+    color: #97bbdc;
+}
+
+#user_options
+{
+    cursor: default;
+    background-color: #8b949b;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 3px;
+    border: solid 1px #6a7279;
 }
 
 #leftMenu a:link { color: #42575a; text-decoration:none; }
@@ -85,14 +95,14 @@ body
 #leftMenu a:hover { color: #f4f8f9; text-decoration:none; }
 #leftMenu a:active { color: #42575a; text-decoration:none; }
 
-#leftMenu #login
+#login
 {
-    background: #7fa4c6;
+    background: #5d82a4;
     color: #2a4157;
     cursor: pointer;
 }
 
-#leftMenu #login:hover 
+#login:hover
 {
     background: #6a7279;
     color: #97bbdc;
