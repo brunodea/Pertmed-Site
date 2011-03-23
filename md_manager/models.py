@@ -16,8 +16,8 @@ class Doctor(models.Model):
         doc_itens_fields = []
 
         for item in doc_itens:
-            fields = sorted(itens_dic[item], key=lambda field: field.name) #lista de field ordenada pelo nome dos fields.
-            doc_itens_fields.append((item, fields))
+            fields = sorted(itens_dic[item], key=lambda item, field: field.name) #lista de field ordenada pelo nome dos fields.
+            doc_itens_fields.append((itens_dic[item][0], fields))
 
         return doc_itens_fields
 		
@@ -29,10 +29,10 @@ class Doctor(models.Model):
             item = Item.objects.get(id=field.item.id)
 
             try:
-                itens[item.name].append(field)
+                itens[item.name].append((item, field))
             except KeyError:
                 itens[item.name] = []
-                itens[item.name].append(field)
+                itens[item.name].append((item, field))
 
         return itens     
 

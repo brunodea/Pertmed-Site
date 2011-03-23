@@ -226,17 +226,17 @@
             {% for item, fields in info_forms %}
                 <div class="item_options">
                     <div class="checkBoxAll" style="width:3%; float:left;">
-                        <input type="checkbox" class="checkAll" name="{{item}}_checkAll"/>
+                        <input type="checkbox" class="checkAll" name="{{item.name}}_checkAll"/>
                     </div>
                     <div class="accordion" style="width:80%;">
                         <div class="profile_item">
-                            <strong> {{ item }} </strong>
+                            <strong> {{ item.name }} </strong>
                         </div>       
 
-                        <div class="profile_fields" id="{{item}}_fields">
+                        <div class="profile_fields" id="{{item.name}}_fields">
                             <table align="center">
-                            {% for label, info in fields %}
-                                <tr><td> {{ label }}: </td><td class="info">{{ info }}</td></tr>
+                            {% for field, info in fields %}
+                                <tr><td> {{ field.name }}: </td><td class="info">{{ info }}</td></tr>
                             {% endfor %}
                             </table>
                         </div>

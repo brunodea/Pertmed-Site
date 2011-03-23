@@ -1,15 +1,19 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from macros import informations
+from models import Item, ItemField
 
 class ProfileForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
 
-        for item, fields in informations:
-            for field in fields:
-                self.fields[field + '_' + item] = forms.BooleanField(required=False, label=field)
+        for item in Item.objects.all():
+            for field in item.itemfield_set.all():
+                self.fields['itemfield_' + str(item.id) + '_' + str(field.id)] = forms.BooleanField(required=False, label=field)
+
+        #for item, fields in informations:
+        #    for field in fields:
+        #        self.fields[field + '_' + item] = forms.BooleanField(required=False, label=field)
     
         try:
             if not self.phone_list:

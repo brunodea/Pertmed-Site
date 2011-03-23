@@ -150,7 +150,7 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
 
         for item, fields in doctor_itens_fields:
             for field in fields:
-                name = field.name + '_' + item
+                name = 'itemfield_' + str(item.id) + '_' + str(field.id)
                 dic_form[name] = [u'on']
 
         i = 0
@@ -158,7 +158,7 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
             phone_number = phone.region + phone.phone
             dic_form['Phone_' + str(i)] = phone_number
             i += 1
-        
+
         forms = ProfileForm(dic_form)
     
     #phonef_error_messages soh tem elementos se entrou no if anterior. Com isso,
@@ -173,12 +173,22 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
     info_forms = []
     #atualiza a lista 'info_forms' para que a forma como o formulario eh apresentado
     #seja mais maleavel no template.
-    for item, fields in informations:
+#    for item, fields in informations:
+#        f_list = []
+#        for field in fields:
+#            f = field + '_' + item
+#            f_list.append((field, forms[f]))
+#        info_forms.append((item, f_list))
+
+
+    for item in Item.objects.all():
         f_list = []
-        for field in fields:
-            f = field + '_' + item
+        for field in item.itemfield_set.all():
+            f = 'itemfield_' + str(item.id) + '_' + str(field.id)
             f_list.append((field, forms[f]))
-        info_forms.append((item, f_list))
+        info_forms.append((item, sorted(f_list, key=lambda elem: elem[0].name)))
+
+    info_forms = sorted(info_forms, key=lambda elem: elem[0].name)
 
     phone_forms = []
     #lista com os campos do formulario para os telefones.
