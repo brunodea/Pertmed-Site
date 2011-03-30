@@ -78,15 +78,22 @@ def checkPhoneForm(request):
     return (error_messages, success_messages)
 
     #TODO: passar a responsabilidade de verificacao para o banco
-def verifyNameAndEmail(email, name):
+def verifyNameAndEmail(user, email, name):
     """ Verifica se o nome e email passados como parametro ja existem no BD.
         Retorna uma tupla com o nome do campo incorreto e a mensagem do erro. """
 
+    user_email = ''
+    user_name = ''
+
+    if user.is_authenticated():
+        user_email = user.email
+        user_name = user.get_full_name()
+
     error = ''
-    if email in [umails.email for umails in User.objects.all()]: #PROBLEMA: estamos passando HORRORES de dados pra memoria RAM -> desnecessario
+    if user_email != email and email in [umails.email for umails in User.objects.all()]: #PROBLEMA: estamos passando HORRORES de dados pra memoria RAM -> desnecessario
         error = ('email', 'Email already registered.')
 
-    elif name in [dname.name for dname in Doctor.objects.all()]: #mesmo acima
+    elif user_name != name and name in [dname.name for dname in Doctor.objects.all()]: #mesmo acima
         error = ('name', 'Name already registered.')
 
     return error
@@ -100,6 +107,8 @@ def profilePOSTHandler(request, doctor, forms):
     user.last_name  = request.POST['last_name']
     user.email = request.POST['email']
     user.save() #salva os novos nome e email do usuario.
+
+    doctor.name = user.get_full_name()
 
     #Deleta os itens e campos que devem ser deletados por terem sido desmarcados
     #pelo medico.
@@ -208,9 +217,9 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
              
         forms = ProfileForm(new_request)
 
-        if not request.POST['first_name'] + ' ' + request.POST['last_name'] == request.user.get_full_name() or not request.POST['email'] == request.user.email:
-            name_email_error = verifyNameAndEmail(request.POST, request.POST['email'],
-                request.POST['first_name'] + ' ' + request.POST['last_name']) 
+        name = request.POST['first_name'] + ' ' + request.POST['last_name']
+        email = request.POST['email']
+        name_email_error = verifyNameAndEmail(request.user, email, name)
 
         if not phonef_error_messages and not name_email_error and forms.is_valid():
             profilePOSTHandler(request, doctor, forms)
@@ -249,13 +258,6 @@ def profile(request, template_name='md_manager/md_profile.html'): #ACHO QUE SERI
     info_forms = []
     #atualiza a lista 'info_forms' para que a forma como o formulario eh apresentado
     #seja mais maleavel no template.
-#    for item, fields in informations:
-#        f_list = []
-#        for field in fields:
-#            f = field + '_' + item
-#            f_list.append((field, forms[f]))
-#        info_forms.append((item, f_list))
-
 
     for item in Item.objects.all():
         f_list = []
@@ -322,7 +324,7 @@ def register(request, template_name='registration/register.html'):
         regis_form = UserCreationFormExtended(request.POST)
         
         #ao invez disso, usar um bloco try/except para pegar a excessao que sera jogada. (violacao de unicidade: email, first name e last name devem sem campos unique)
-        regist_form_errors = verifyNameAndEmail(request.POST['email'],
+        regist_form_errors = verifyNameAndEmail(request.user, request.POST['email'],
             request.POST['first_name'] + ' ' + request.POST['last_name'])
 
         #caso esteja tudo ok, um novo usuario eh criado.
