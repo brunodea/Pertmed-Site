@@ -38,7 +38,7 @@
             {% endif %}
             
             //impede que seja digitado valores nao numericos na caixa de texto.
-            $("#phone_form_table .phone_text").numeric();
+            $("#phone_form_table .phone_field").numeric();
 
             //quando o usuario clica no botao, muda-se o que eh visualizado para
             //as opcoes de mudanca de perfil.
@@ -213,7 +213,7 @@
                         {% endif %}
                     <tr id="{{phone.label}}_row">
                         <td>Phone Number:</td>
-                        <td>{{ phone }}</td>
+                        <td><div class="phone_field">{{ phone }}</div></td>
                         <td><img class="delete_phone" src="/static/images/X.png" alt="Delete Phone" width="15px" height="15px" /></td>
                     </tr> 
                 {% endfor %}
